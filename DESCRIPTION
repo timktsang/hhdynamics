@@ -1,0 +1,16 @@
+Package: hhdynamics
+Type: Package
+Title: Fitting household transmission model to estimate household transmission dynamics of influenza
+Version: 1.0
+Date: 2023-11-20
+Author: Tim Tsang
+Maintainer: Tim Tsang <timkltsang@gmail.com>
+Description: A Bayesian household transmission model to estimate household transmission dynamics, with accounting for infection from community and tertiary cases.
+License: GPL (>= 2)
+Imports: Rcpp (>= 1.0.9)
+LinkingTo: 
+    Rcpp,
+    RcppArmadillo,
+    RcppParallel
+SystemRequirements: C++11, TBB
+RoxygenNote: 7.2.3
