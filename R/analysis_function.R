@@ -32,7 +32,6 @@ move[1] <- with_rm
 move[4] <- 0
 sep1 <- 5
 sep2 <- n_inf+n_sus+3 # 3 for onset time and the inf status, and the random effect
-sourceCpp("sse.cpp")
 
 aaaaa1 <- Sys.time()
 tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2)
