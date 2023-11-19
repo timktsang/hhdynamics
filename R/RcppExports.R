@@ -2,26 +2,26 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 serial_density <- function(p1, p2) {
-    .Call(`_hhdynamics_serial_density`, p1, p2)
+    .Call('_hhdynamics_serial_density', PACKAGE = 'hhdynamics', p1, p2)
 }
 
 prior_loglik <- function(para) {
-    .Call(`_hhdynamics_prior_loglik`, para)
+    .Call('_hhdynamics_prior_loglik', PACKAGE = 'hhdynamics', para)
 }
 
 sim_data <- function(data1, SI, para, n_inf, n_sus, with_rm, sep1, sep2) {
-    .Call(`_hhdynamics_sim_data`, data1, SI, para, n_inf, n_sus, with_rm, sep1, sep2)
+    .Call('_hhdynamics_sim_data', PACKAGE = 'hhdynamics', data1, SI, para, n_inf, n_sus, with_rm, sep1, sep2)
 }
 
 loglik <- function(data, SI, para, n_inf, n_sus, with_rm, sep1, sep2) {
-    .Call(`_hhdynamics_loglik`, data, SI, para, n_inf, n_sus, with_rm, sep1, sep2)
+    .Call('_hhdynamics_loglik', PACKAGE = 'hhdynamics', data, SI, para, n_inf, n_sus, with_rm, sep1, sep2)
 }
 
 all_update <- function(data, dataorg, SI, para, member, loglik1, loglik2, n_inf, n_sus, with_rm, sep1, sep2) {
-    .Call(`_hhdynamics_all_update`, data, dataorg, SI, para, member, loglik1, loglik2, n_inf, n_sus, with_rm, sep1, sep2)
+    .Call('_hhdynamics_all_update', PACKAGE = 'hhdynamics', data, dataorg, SI, para, member, loglik1, loglik2, n_inf, n_sus, with_rm, sep1, sep2)
 }
 
 mcmc <- function(data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2) {
-    .Call(`_hhdynamics_mcmc`, data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2)
+    .Call('_hhdynamics_mcmc', PACKAGE = 'hhdynamics', data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2)
 }
 
