@@ -1,0 +1,55 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+# hhdynamics
+
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
+
+`hhdynamics` is a household transmission model that can fit to the case-ascertained household transmission studies. This model describes the risk of PCR-confirmed infection among household contacts as depending on time since illness. This is an individual-based hazard model that can characterize influenza transmission dynamics within households and estimate the effects of factors affecting transmission. The model is fitted in a Bayesian modeling framework.
+
+While the package currently provides a set of fundamental functions, we are actively working on expanding its capabilities with more advanced tools for a comprehensive understanding of your results.
+ 
+## Installation
+1. Install [R][r-project]
+
+2. Install the development version of hhdynamics from [GitHub](https://github.com/timktsang/hhdynamics):
+
+```{r installation,eval=FALSE}
+devtools::install_github("timktsang/hhdynamics")
+library(hhdynamics)
+```
+
+## Example
+
+This is a basic example of how to load some serological data and fitting the model using the MCMC framework.
+
+```{r example, message=FALSE,warning=FALSE,eval=FALSE}
+library(hhdynamics)
+
+## Load in the example data and the serial interval distribution.
+data("inputdata")
+data("SI")
+
+###### run the MCMC to estimate parameter of the model
+###### in actual analysis, number of iteration is 15000, burnin is 5000, and thinning is 1
+fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = '~age',SI,n_iteration =  15000,burnin = 5000, thinning =  1)
+
+
+```
+
+## Citation
+
+To cite package **hhdynamics** in publications use:
+
+Tsang TK, Cauchemez S, Perera RA, Freeman G, Fang VJ, Ip DK, Leung GM, Malik Peiris JS, Cowling BJ. (2023). Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92
