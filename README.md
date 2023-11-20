@@ -33,8 +33,8 @@ library(hhdynamics)
 
 ## Example
 
-This is a basic example of how to load some serological data and fitting
-the model using the MCMC framework.
+This is a basic example of how to load a data from household
+transmission study and fitting the model using the MCMC framework.
 
 ``` r
 library(hhdynamics)
