@@ -52,4 +52,4 @@ fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = 
 
 To cite package **hhdynamics** in publications use:
 
-Tsang TK, Cauchemez S, Perera RA, Freeman G, Fang VJ, Ip DK, Leung GM, Malik Peiris JS, Cowling BJ. (2023). Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92
+Tsang TK, Cauchemez S, Perera RA, Freeman G, Fang VJ, Ip DK, Leung GM, Malik Peiris JS, Cowling BJ. (2014). Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92
