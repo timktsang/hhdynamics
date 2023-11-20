@@ -9,15 +9,15 @@ create_wide_data(input, inf_factor, sus_factor)
 \arguments{
 \item{input}{The input data, in long format.}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'}
+\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'}
+\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.}
 }
 \value{
-A data frame in the wide format
+A data frame in the wide format.
 }
 \description{
-The function to create a wide format of the household data (each row is a household), based on long format of data (each row is an individual), to fit the household transmission model.
+This function creates a wide format of the household data (each row is a household), based on the long format of data (each row is an individual), to fit the household transmission model.
 }
 \examples{
 wide_data <- create_wide_data(inputdata,'~sex','~age')

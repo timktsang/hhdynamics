@@ -18,7 +18,7 @@ run_MCMC(
 \arguments{
 \item{data_w}{The data for running MCMC, in dataframe format. It should be in the same format as the data in the package. It includes: 1) age_group (0: children, 1: adults, 2: older adults), 2) start_time: start of follow-up, 3) end_time: end of follow-up, 4) time1: date for first serum collection, 5) time2: date for second serum collection, 6) time3: date for third serum collection, 7) HAI_titer_1: HAI titer for first serum collection, 8) HAI_titer_2: HAI titer for second serum collection, 9) HAI_titer_3: HAI titer for third serum collection.}
 
-\item{SI}{The data for influenza activity used in the inference. The row number should match with the date in the inputdata.}
+\item{SI}{The data for influenza activity used in the inference. The row number should match with the date in the input data.}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 
@@ -30,13 +30,13 @@ run_MCMC(
 
 \item{n_sus}{The number of parameters affecting susceptibility in the model.}
 
-\item{with_rm}{Indicator if the model has random effect on individual infectivity or not.}
+\item{with_rm}{Indicator if the model has a random effect on individual infectivity or not.}
 }
 \value{
-A matrix stores the posterior samples for the model parameter.
+A matrix that stores the posterior samples for the model parameter.
 }
 \description{
-This is function to run the MCMC for the household transmission model. This is used in the main function.
+This function runs the MCMC for the household transmission model. It is used in the main function.
 }
 \examples{
 mcmc_result <- run_MCMC(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm)

@@ -11,10 +11,14 @@ A vector of length 14, where element X of the vector represents a probability th
 }
 }
 \usage{
-data(flu_activity)
+data(SI)
 }
 \description{
 This is an example of the serial interval distribution used in the \code{hhdynamics} function. This vector specifies the format of the serial interval distribution. This is estimated from Tsang et al. Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92.
+}
+\seealso{
+Other example_data: 
+\code{\link{para}}
 }
 \concept{example_data}
 \keyword{datasets}

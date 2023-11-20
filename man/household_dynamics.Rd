@@ -15,13 +15,13 @@ household_dynamics(
 )
 }
 \arguments{
-\item{input}{The input data, in long format (each row is an individual). The data must include 1: hhID: the household id, 2: member: the member id in a households, use 0 to index, 1 and so on as household contact, 3: size: the number of individuals in the households, 4: end: the end date of follow-up of that individual, 5: inf: the infection status of the member. By defintion, index must be infected. 6: onset: the onset time of individual. The data must also incldue the factors affecting infectivity or susceptibility that may be explored.}
+\item{input}{The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'}
+\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'}
+\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.}
 
-\item{SI}{The mass function of the serial interval distribution. It should have length equal to 14.}
+\item{SI}{The mass function of the serial interval distribution. It should have a length equal to 14.}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 
@@ -30,10 +30,10 @@ household_dynamics(
 \item{thinning}{The number of thinning in MCMC.}
 }
 \value{
-A data frame that store the estimates from a fitted MCMC.
+A data frame that stores the estimates from a fitted MCMC.
 }
 \description{
-The main function to fit household transmission model to the data, to estimate the probability of infection from community, probability of person-to-person transmission in households, and factors affecting susceptibility and infectivity.
+The main function to fit the household transmission model to the data, to estimate the probability of infection from the community, probability of person-to-person transmission in households, and factors affecting susceptibility and infectivity.
 }
 \examples{
 fitted_result <- household_dynamics(inputdata,'~sex','~age',SI,15000,5000,1,0)

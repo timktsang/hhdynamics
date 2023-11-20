@@ -21,7 +21,7 @@
 #'
 #' This is an example of the serial interval distribution used in the \code{hhdynamics} function. This vector specifies the format of the serial interval distribution. This is estimated from Tsang et al. Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92.
 #' @docType data
-#' @usage data(flu_activity)
+#' @usage data(SI)
 #' @format A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after infection.
 #' \describe{
 #'   \item{}{This is the serial interval distribution. The sum of the vector elements should be 1.}
@@ -29,3 +29,22 @@
 #' @family example_data
 "SI"
 
+#' Example of parameter vector for the main model
+#'
+#' This is an example of the parameter vector for the main model used in the \code{hhdynamics} function. This vector specifies the format of the parameter vector for the main model.
+#' @docType data
+#' @usage data(para)
+#' @format A vector with 8 elements, where each of them is a model parameter:
+#' \describe{
+#'   \item{element 1}{the random effect of individual infectivity (not available in this version. Models assumed no indiviudal heterogeneity after accounting for factors affecting infectivity)}
+#'   \item{element 2}{the probability of infection from the community}
+#'   \item{element 3}{the probability of person-to-person transmission in households}
+#'   \item{element 4}{the parameter of the relationship between the number of household contacts and transmission (default 0 in this version)}
+#'   \item{element 5}{the parameter for infectivity of male (Reference group: male)}
+#'   \item{element 6}{the relative susceptibility of age group 1 (Reference group: age group 0)}
+#'   \item{element 7}{the relative susceptibility of age group 2 (Reference group: age group 0)}
+#'   \item{element 8}{the relative susceptibility of age group 3 (Reference group: age group 0)}
+#'   \item{element 9}{the relative susceptibility of age group 4 (Reference group: age group 0)}
+#'}
+#' @family example_data
+"para"

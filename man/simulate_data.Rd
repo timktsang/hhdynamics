@@ -2,28 +2,28 @@
 % Please edit documentation in R/analysis_function.R
 \name{simulate_data}
 \alias{simulate_data}
-\title{Simulation of the dataset based on the input dataset, and a household transmission model.}
+\title{Simulation of the dataset based on the input dataset and a household transmission model.}
 \usage{
 simulate_data(input, rep_num, inf_factor, sus_factor, SI, para, with_rm)
 }
 \arguments{
-\item{input}{The dataset in the long format.}
+\item{input}{The dataset in long format.}
 
-\item{rep_num}{The number of replication of the input dataset, to increase the sample size. (need modify later)}
+\item{rep_num}{The number of replications of the input dataset, to increase the sample size. (needs modification later)}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'}
+\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'}
+\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.}
 
-\item{para}{The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from community, 3) the probability of person-to-person transmission in household, 4) the parameter of the relationship between number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.}
+\item{para}{The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.}
 
-\item{with_rm}{Indicator if the model has random effect on individual infectivity or not.}
+\item{with_rm}{Indicator if the model has a random effect on individual infectivity or not.}
 }
 \value{
 A simulated data based on the input parameter vectors, with the format equal to the input data.
 }
 \description{
-The function to simulate the dataset, for validation or other purpose.
+This function simulates the dataset for validation or other purposes.
 }
 \examples{
 a1 <- simulate_data(inputdata,10,'~sex','~age',SI,c(1,0.005,0.05,0,0.1,0.1,0.1,0.1,0.1),0)
