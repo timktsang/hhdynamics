@@ -173,7 +173,10 @@ simulate_data <- function(input,rep_num,inf_factor,sus_factor,SI,para,with_rm){
   create_sim_data <- create_wide_data(input,inf_factor,sus_factor)
   simdata <- create_sim_data[[1]]
   
-  c1 <- sim_data(as.matrix(simdata[rep(1:nrow(simdata),rep_num),]),SI,para,with_rm,5,create_sim_data[[2]]+create_sim_data[[3]]+3)
+  n_inf <- create_sim_data[[2]]
+  n_sus <- create_sim_data[[3]]
+
+  c1 <- sim_data(as.matrix(simdata[rep(1:nrow(simdata),rep_num),]),SI,para,n_inf,n_sus,with_rm,5,n_inf+n_sus+3)
   
   return(c1[[1]])
 }
