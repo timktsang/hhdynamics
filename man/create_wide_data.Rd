@@ -9,9 +9,9 @@ create_wide_data(input, inf_factor, sus_factor)
 \arguments{
 \item{input}{The input data, in long format.}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'.}
+\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.}
+\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
 }
 \value{
 A data frame in the wide format.

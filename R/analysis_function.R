@@ -1,8 +1,8 @@
 #' Run the MCMC for the household transmission
 #'
 #' This function runs the MCMC for the household transmission model. It is used in the main function.
-#' @param data_w The data for running MCMC, in dataframe format. It should be in the same format as the data in the package. It includes: 1) age_group (0: children, 1: adults, 2: older adults), 2) start_time: start of follow-up, 3) end_time: end of follow-up, 4) time1: date for first serum collection, 5) time2: date for second serum collection, 6) time3: date for third serum collection, 7) HAI_titer_1: HAI titer for first serum collection, 8) HAI_titer_2: HAI titer for second serum collection, 9) HAI_titer_3: HAI titer for third serum collection.
-#' @param SI The data for influenza activity used in the inference. The row number should match with the date in the input data.
+#' @param data_w The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.
+#' @param SI The mass function of the serial interval distribution. It should have a length equal to 14.
 #' @param n_iteration The number of iterations of the MCMC.
 #' @param burnin The iteration for burn-in for MCMC.
 #' @param thinning The number of thinning in MCMC.
@@ -36,7 +36,7 @@ sep2 <- n_inf+n_sus+3 # 3 for onset time and the inf status, and the random effe
 aaaaa1 <- Sys.time()
 tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2)
 aaaaa2 <- Sys.time()
-print(aaaaa2-aaaaa1)
+print(paste0('The running time is ',round(difftime(aaaaa2,aaaaa1,units = "secs")), ' seconds'))
 
 return(tt[[1]][keep_iteration,])
 }
@@ -66,8 +66,8 @@ para_summary <- function(mcmc,a,b,print){
 #'
 #' This function creates a wide format of the household data (each row is a household), based on the long format of data (each row is an individual), to fit the household transmission model.
 #' @param input The input data, in long format.
-#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'.
-#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.
+#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
+#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
 #' @return A data frame in the wide format.
 #' @examples 
 #' wide_data <- create_wide_data(inputdata,'~sex','~age')
@@ -80,13 +80,13 @@ create_wide_data <- function(input,inf_factor,sus_factor){
   n_inf <- 0
   # get the infectivity
   data_a <- cbind(data_a,0)
-  if (!(missing(inf_factor))){
+  if (inf_factor!='~'){
     design_matrix_inf <- model.matrix(as.formula(inf_factor),input)
     n_inf <- ncol(design_matrix_inf)-1
     data_a <- cbind(data_a,design_matrix_inf[,-1,drop=F])
   }
   # get the susceptibility
-  if (!missing(sus_factor)){
+  if (sus_factor!='~'){
     design_matrix_sus <- model.matrix(as.formula(sus_factor),input)
     n_sus <- ncol(design_matrix_sus)-1
     data_a <- cbind(data_a,design_matrix_sus[,-1,drop=F])
@@ -108,8 +108,8 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 #'
 #' The main function to fit the household transmission model to the data, to estimate the probability of infection from the community, probability of person-to-person transmission in households, and factors affecting susceptibility and infectivity.
 #' @param input The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.
-#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'.
-#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.
+#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
+#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
 #' @param SI The mass function of the serial interval distribution. It should have a length equal to 14.
 #' @param n_iteration The number of iterations of the MCMC.
 #' @param burnin The iteration for burn-in for MCMC.
@@ -160,13 +160,13 @@ return(output)
 #' This function simulates the dataset for validation or other purposes. 
 #' @param input The dataset in long format.
 #' @param rep_num The number of replications of the input dataset, to increase the sample size. (needs modification later)
-#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'.
-#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.
+#' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
+#' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
 #' @param para The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.
 #' @param with_rm Indicator if the model has a random effect on individual infectivity or not.
 #' @return A simulated data based on the input parameter vectors, with the format equal to the input data.
 #' @examples 
-#' a1 <- simulate_data(inputdata,10,'~sex','~age',SI,c(1,0.005,0.05,0,0.1,0.1,0.1,0.1,0.1),0)
+#' a1 <- simulate_data(inputdata,10,'~sex','~age',SI,para,0)
 #' @export
 simulate_data <- function(input,rep_num,inf_factor,sus_factor,SI,para,with_rm){
  

@@ -11,9 +11,9 @@ simulate_data(input, rep_num, inf_factor, sus_factor, SI, para, with_rm)
 
 \item{rep_num}{The number of replications of the input dataset, to increase the sample size. (needs modification later)}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'.}
+\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'.}
+\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
 
 \item{para}{The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.}
 
@@ -26,5 +26,5 @@ A simulated data based on the input parameter vectors, with the format equal to 
 This function simulates the dataset for validation or other purposes.
 }
 \examples{
-a1 <- simulate_data(inputdata,10,'~sex','~age',SI,c(1,0.005,0.05,0,0.1,0.1,0.1,0.1,0.1),0)
+a1 <- simulate_data(inputdata,10,'~sex','~age',SI,para,0)
 }

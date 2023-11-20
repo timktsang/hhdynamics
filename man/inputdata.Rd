@@ -12,8 +12,8 @@ A data frame with 8 variables, where each row represents an individual:
   \item{size}{The number of individuals in the household}
   \item{end}{The end date of follow-up of that individual}
   \item{inf}{The infection status of the member. By defintion, index must be infected}	
-  \item{onset}{The onset time of infected individual.}	
-  \item{age_group}{The age group of individual. 0: 0-9, 1: 10-19, 2: 20-49, 3: 50-64, 4: 65 or above }
+  \item{onset}{The onset time of infected individual}	
+  \item{age_group}{The age group of individual. 0: 0-19, 1: 20-64, 2: 65 or above}
   \item{sex}{The sex of the individual. 0: Female, 1: Male}
 }
 }

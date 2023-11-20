@@ -14,8 +14,6 @@ A vector with 8 elements, where each of them is a model parameter:
   \item{element 5}{the parameter for infectivity of male (Reference group: male)}
   \item{element 6}{the relative susceptibility of age group 1 (Reference group: age group 0)}
   \item{element 7}{the relative susceptibility of age group 2 (Reference group: age group 0)}
-  \item{element 8}{the relative susceptibility of age group 3 (Reference group: age group 0)}
-  \item{element 9}{the relative susceptibility of age group 4 (Reference group: age group 0)}
 }
 }
 \usage{

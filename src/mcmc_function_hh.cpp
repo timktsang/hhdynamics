@@ -136,7 +136,7 @@ data11(b1,b2*sep2+sep1+1)=-1;
 sus[b2]=0;
 if (n_sus>0){
 for (b4=n_sus-1;b4>=0;--b4){
-sus[b2]+=para[4+n_inf+b4]*(data11(b1,b3*sep2+sep1+3+n_inf+b4));	
+sus[b2]+=para[4+n_inf+b4]*(data11(b1,b2*sep2+sep1+3+n_inf+b4));	
 }
 }
 }

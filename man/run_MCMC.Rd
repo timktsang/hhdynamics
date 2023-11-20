@@ -16,9 +16,9 @@ run_MCMC(
 )
 }
 \arguments{
-\item{data_w}{The data for running MCMC, in dataframe format. It should be in the same format as the data in the package. It includes: 1) age_group (0: children, 1: adults, 2: older adults), 2) start_time: start of follow-up, 3) end_time: end of follow-up, 4) time1: date for first serum collection, 5) time2: date for second serum collection, 6) time3: date for third serum collection, 7) HAI_titer_1: HAI titer for first serum collection, 8) HAI_titer_2: HAI titer for second serum collection, 9) HAI_titer_3: HAI titer for third serum collection.}
+\item{data_w}{The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.}
 
-\item{SI}{The data for influenza activity used in the inference. The row number should match with the date in the input data.}
+\item{SI}{The mass function of the serial interval distribution. It should have a length equal to 14.}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 
