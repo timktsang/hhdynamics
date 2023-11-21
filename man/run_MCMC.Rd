@@ -18,7 +18,7 @@ run_MCMC(
 \arguments{
 \item{data_w}{The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.}
 
-\item{SI}{The mass function of the serial interval distribution. It should have a length equal to 14.}
+\item{SI}{The mass function of the serial interval distribution.}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 

@@ -5,7 +5,7 @@
 \alias{SI}
 \title{Example of serial interval distribution of influenza}
 \format{
-A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after infection.
+A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after the onset day of the infector.
 \describe{
   \item{}{This is the serial interval distribution. The sum of the vector elements should be 1.}
 }

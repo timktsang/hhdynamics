@@ -5,7 +5,7 @@
 \alias{inputdata}
 \title{Example of input data}
 \format{
-A data frame with 8 variables, where each row represents an individual:
+A example data with 8 variables, where each row represents an individual. For user's data, more predictors could be added by adding columns. For categorical variables, it should be specificed as factor, by using as.factor() function. The date is the dataset is an integer, by selecting a reference date as day 1. In the example dataset, 2008-01-01 is day 1.
 \describe{
   \item{hhID}{The household id}	
   \item{member}{The member id in a households, use 0 to index, 1 and so on as household contact}	

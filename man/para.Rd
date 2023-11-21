@@ -5,7 +5,7 @@
 \alias{para}
 \title{Example of parameter vector for the main model}
 \format{
-A vector with 8 elements, where each of them is a model parameter:
+A vector with 7 elements, where each of them is a model parameter:
 \describe{
   \item{element 1}{the random effect of individual infectivity (not available in this version. Models assumed no indiviudal heterogeneity after accounting for factors affecting infectivity)}
   \item{element 2}{the probability of infection from the community}

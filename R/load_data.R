@@ -3,7 +3,7 @@
 #' This is an example of the input data used in the \code{hhdynamics} function. This data frame illustrates the format of the input data. This is a simulated data.
 #' @docType data
 #' @usage data(inputdata)
-#' @format A data frame with 8 variables, where each row represents an individual:
+#' @format A example data with 8 variables, where each row represents an individual. For user's data, more predictors could be added by adding columns. For categorical variables, it should be specificed as factor, by using as.factor() function. The date is the dataset is an integer, by selecting a reference date as day 1. In the example dataset, 2008-01-01 is day 1.
 #' \describe{
 #'   \item{hhID}{The household id}	
 #'   \item{member}{The member id in a households, use 0 to index, 1 and so on as household contact}	
@@ -22,7 +22,7 @@
 #' This is an example of the serial interval distribution used in the \code{hhdynamics} function. This vector specifies the format of the serial interval distribution. This is estimated from Tsang et al. Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92.
 #' @docType data
 #' @usage data(SI)
-#' @format A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after infection.
+#' @format A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after the onset day of the infector.
 #' \describe{
 #'   \item{}{This is the serial interval distribution. The sum of the vector elements should be 1.}
 #'}
@@ -34,7 +34,7 @@
 #' This is an example of the parameter vector for the main model used in the \code{hhdynamics} function. This vector specifies the format of the parameter vector for the main model.
 #' @docType data
 #' @usage data(para)
-#' @format A vector with 8 elements, where each of them is a model parameter:
+#' @format A vector with 7 elements, where each of them is a model parameter:
 #' \describe{
 #'   \item{element 1}{the random effect of individual infectivity (not available in this version. Models assumed no indiviudal heterogeneity after accounting for factors affecting infectivity)}
 #'   \item{element 2}{the probability of infection from the community}

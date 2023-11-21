@@ -118,7 +118,7 @@ for (unsigned int b1=begin;b1<end;++b1){
 int b2;
 int b3;
 int b4;
-int b5;
+//int b5;
 int b6;
 double hazard;
 double sus[int(data11(b1,1))];
@@ -143,6 +143,7 @@ sus[b2]+=para[4+n_inf+b4]*(data11(b1,b2*sep2+sep1+3+n_inf+b4));
 
 
 for (b2=data11(b1,1)-1;b2>=0;--b2){
+
 if (with_rm==1){
 // generate the infectivity 
 data11(b1,b2*sep2+sep1+2)=R::rnorm(0.0,para[0]);	
@@ -208,9 +209,9 @@ int n_sus,
 int with_rm,
 int sep1,      // sep1=5
 int sep2){     // sep2=10
-int b1;
-int b2;
-int b3;
+//int b1;
+//int b2;
+//int b3;
 // clone the data first
 NumericMatrix data11(clone(data1));
 
@@ -675,8 +676,8 @@ int sep2){
 int b0;
 int b1;
 int b2;
-int b3;
-int b4;
+//int b3;
+//int b4;
 int moveindex;
 int max_member=max(data1(_,1));
 //####################################################################################################################################
