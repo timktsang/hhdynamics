@@ -48,6 +48,8 @@ data("SI")
 fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = '~age',SI,n_iteration =  15000,burnin = 5000, thinning =  1)
 ```
 
+![The output of the MCMC results.](man/figures/hhresult.png)
+
 ## Citation
 
 To cite package **hhdynamics** in publications use:

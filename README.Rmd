@@ -47,6 +47,7 @@ fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = 
 
 
 ```
+![The output of the MCMC results.](man/figures/hhresult.png)
 
 ## Citation
 
