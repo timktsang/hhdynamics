@@ -3,32 +3,46 @@
 \alias{hhdynamics}
 \docType{package}
 \title{
-  A short title line describing what the package does
+   Household Transmission Modeling for household transmission (Case-Ascertain) Studies
 }
 \description{
-  A more detailed description of what the package does. A length
-  of about one to five lines is recommended.
+  The `hhdynamics` package provides a model for analyzing household transmission dynamics, specifically focusing on fitting models to case-ascertained household transmission studies. It allows users to assess the risk of infections among household contacts based on various parameters. The package also provides functions for simulating household transmission dynamics and for fitting models to data from case-ascertained household transmission studies.
 }
 \details{
-  This section should provide a more detailed overview of how to use the
-  package, including the most important functions.
+This package includes functions to simulate household transmission data, fit models using Markov Chain Monte Carlo (MCMC) methods, and generate summary statistics for the analysis. 
+Main function is:
+   - `household_dynamics()`: high-level function to get estimates from modeling of household transmission studies. 
+Key functions include:
+  - `simulate_data()`: Generates synthetic data for household transmission studies.
+  - `run_MCMC()`: Fits the transmission model using MCMC.
+  - `create_wide_data()`: Prepares data for model fitting.
+  - `SI()`: Calculates secondary infection probabilities.'
 }
 \author{
-Your Name, email optional.
+Tim Tsang, timkltsang@gmail.com.
 
-Maintainer: Your Name <your@email.com>
+Maintainer: Tim Tsang <timkltsang@gmail.com>
 }
 \references{
-  This optional section can contain literature or other references for
-  background information.
+To cite package **hhdynamics** in publications use:
+
+Tsang TK, Cauchemez S, Perera RA, Freeman G, Fang VJ, Ip DK, Leung GM,
+Malik Peiris JS, Cowling BJ. (2014). Association between antibody titers
+and protection against influenza virus infection within households. J
+Infect Dis. 2014 Sep 1;210(5):684-92
 }
 \keyword{ package }
 \seealso{
-  Optional links to other man pages
+  README.md
 }
 \examples{
   \dontrun{
-     ## Optional simple examples of the most important functions
-     ## These can be in \dontrun{} and \donttest{} blocks.   
+## Load in the example data and the serial interval distribution.
+data("inputdata")
+data("SI")
+
+###### run the MCMC to estimate parameter of the model
+###### in actual analysis, number of iteration is 15000, burnin is 5000, and thinning is 1
+fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = '~age',SI,n_iteration =  15000,burnin = 5000, thinning =  1)
   }
 }

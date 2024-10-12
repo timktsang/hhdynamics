@@ -137,10 +137,17 @@ names(output) <- c("Variable","Point estimate","Lower bound","Upper bound","exp(
 z1[2:3,] <- 1-exp(-z1[2:3,])
 z1 <- cbind(z1,exp(z1))
 output[] <- z1[,c(4,1:3,5:7)]
-output[,1] <- c("Standard deviation of random effect",
-                "Daily probability of infection from community",
-                "Probability of person-to-person transmission in households",
-                "Parameter of the relationship between transmission and number of household members",names(data_w)[5+3+(1:(n_sus+n_inf))])
+if (n_sus + n_inf>0){
+output[, 1] <- c("Standard deviation of random effect", "Daily probability of infection from community", 
+                 "Probability of person-to-person transmission in households", 
+                 "Parameter of the relationship between transmission and number of household members", 
+                 names(data_w)[5 + 3 + (1:(n_sus + n_inf))])
+}
+if (n_sus + n_inf==0){
+  output[, 1] <- c("Standard deviation of random effect", "Daily probability of infection from community", 
+                   "Probability of person-to-person transmission in households", 
+                   "Parameter of the relationship between transmission and number of household members")
+}
 output[1:4,5:7] <- NA
 output <- output[-4,]
 if (with_rm == 0){
