@@ -39,5 +39,13 @@ A matrix that stores the posterior samples for the model parameter.
 This function runs the MCMC for the household transmission model. It is used in the main function.
 }
 \examples{
-mcmc_result <- run_MCMC(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm)
+\donttest{
+result_list <- create_wide_data(inputdata, '~sex', '~age')
+data_w <- result_list[[1]]
+n_inf <- result_list[[2]]
+n_sus <- result_list[[3]]
+mcmc_result <- run_MCMC(data_w, SI,
+  n_iteration = 15000, burnin = 5000,
+  thinning = 1, n_inf, n_sus, with_rm = 0)
+}
 }

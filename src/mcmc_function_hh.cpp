@@ -30,7 +30,7 @@ double rnorm(double a, double b) { // a: mean, b: s.d.
 // function to generate binomial random number
 
 int gen_binom(double p){
-double cut=(double)rand()/(RAND_MAX);
+double cut=R::runif(0,1);
 int out=0;
 if (cut<p){
 out=1;
@@ -452,7 +452,7 @@ int b5;
 int b6;
 
 if (member<data(b1,1)){
-if ((with_rm==1)|((member!=0)&(datapro(b1,member*sep2+sep1+1)!=-1))){
+if ((with_rm==1)||((member!=0)&&(datapro(b1,member*sep2+sep1+1)!=-1))){
 if (data(b1,member*sep2+sep1)==1){
 
 // first update infection time
@@ -465,7 +465,7 @@ double proratio=0;
 
 if (member!=0){
 if (dataorg(b1,member*sep2+sep1+1)==-1){
-datapro(b1,member*sep2+sep1+1)=rand()%int((data(b1,4)-data(b1,3)))+data(b1,3);
+datapro(b1,member*sep2+sep1+1)=(int)floor(R::runif(0, (data(b1,4)-data(b1,3))))+data(b1,3);
 }
 }
 
@@ -757,16 +757,16 @@ sigma(b1)=sd(temp1);
 if (acceptrate(b1)<0.1){
 sigma(b1)*=0.5;
 }	
-if ((acceptrate(b1)<0.15)&(acceptrate(b1)>0.1)){
+if ((acceptrate(b1)<0.15)&&(acceptrate(b1)>0.1)){
 sigma(b1)*=0.8;
 }
-if ((acceptrate(b1)<0.2)&(acceptrate(b1)>0.15)){
+if ((acceptrate(b1)<0.2)&&(acceptrate(b1)>0.15)){
 sigma(b1)*=0.95;
 }
-if ((acceptrate(b1)<0.4)&(acceptrate(b1)>0.3)){
+if ((acceptrate(b1)<0.4)&&(acceptrate(b1)>0.3)){
 sigma(b1)*=1.05;
 }
-if ((acceptrate(b1)<0.9)&(acceptrate(b1)>0.4)){
+if ((acceptrate(b1)<0.9)&&(acceptrate(b1)>0.4)){
 sigma(b1)*=1.2;
 }
 if (acceptrate(b1)>0.9){

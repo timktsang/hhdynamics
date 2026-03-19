@@ -36,5 +36,10 @@ A data frame that stores the estimates from a fitted MCMC.
 The main function to fit the household transmission model to the data, to estimate the probability of infection from the community, probability of person-to-person transmission in households, and factors affecting susceptibility and infectivity.
 }
 \examples{
-fitted_result <- household_dynamics(inputdata,'~sex','~age',SI,15000,5000,1,0)
+\donttest{
+fitted_result <- household_dynamics(inputdata,
+  '~sex', '~age', SI,
+  n_iteration = 15000, burnin = 5000,
+  thinning = 1)
+}
 }

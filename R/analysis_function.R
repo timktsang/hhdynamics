@@ -10,8 +10,16 @@
 #' @param n_sus The number of parameters affecting susceptibility in the model.
 #' @param with_rm Indicator if the model has a random effect on individual infectivity or not.
 #' @return A matrix that stores the posterior samples for the model parameter.
-#' @examples 
-#' mcmc_result <- run_MCMC(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm)
+#' @examples
+#' \donttest{
+#' result_list <- create_wide_data(inputdata, '~sex', '~age')
+#' data_w <- result_list[[1]]
+#' n_inf <- result_list[[2]]
+#' n_sus <- result_list[[3]]
+#' mcmc_result <- run_MCMC(data_w, SI,
+#'   n_iteration = 15000, burnin = 5000,
+#'   thinning = 1, n_inf, n_sus, with_rm = 0)
+#' }
 #' @export
 run_MCMC <- function(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm){
   
@@ -115,8 +123,13 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 #' @param burnin The iteration for burn-in for MCMC.
 #' @param thinning The number of thinning in MCMC.
 #' @return A data frame that stores the estimates from a fitted MCMC.
-#' @examples 
-#' fitted_result <- household_dynamics(inputdata,'~sex','~age',SI,15000,5000,1,0)
+#' @examples
+#' \donttest{
+#' fitted_result <- household_dynamics(inputdata,
+#'   '~sex', '~age', SI,
+#'   n_iteration = 15000, burnin = 5000,
+#'   thinning = 1)
+#' }
 #' @export
 household_dynamics <- function(input,inf_factor,sus_factor,SI,n_iteration = 15000,burnin = 5000,thinning = 1){
   # later may add the model with random effect on infectivity.
@@ -170,10 +183,12 @@ return(output)
 #' @param inf_factor Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
 #' @param sus_factor Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'
 #' @param para The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.
+#' @param SI The mass function of the serial interval distribution.
 #' @param with_rm Indicator if the model has a random effect on individual infectivity or not.
 #' @return A simulated data based on the input parameter vectors, with the format equal to the input data.
-#' @examples 
-#' a1 <- simulate_data(inputdata,10,'~sex','~age',SI,para,0)
+#' @examples
+#' simulated <- simulate_data(inputdata, 10, '~sex', '~age',
+#'   SI, para, 0)
 #' @export
 simulate_data <- function(input,rep_num,inf_factor,sus_factor,SI,para,with_rm){
  

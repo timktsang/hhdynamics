@@ -15,6 +15,8 @@ simulate_data(input, rep_num, inf_factor, sus_factor, SI, para, with_rm)
 
 \item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
 
+\item{SI}{The mass function of the serial interval distribution.}
+
 \item{para}{The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.}
 
 \item{with_rm}{Indicator if the model has a random effect on individual infectivity or not.}
@@ -26,5 +28,6 @@ A simulated data based on the input parameter vectors, with the format equal to 
 This function simulates the dataset for validation or other purposes.
 }
 \examples{
-a1 <- simulate_data(inputdata,10,'~sex','~age',SI,para,0)
+simulated <- simulate_data(inputdata, 10, '~sex', '~age',
+  SI, para, 0)
 }
