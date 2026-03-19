@@ -2,12 +2,12 @@
 % Please edit documentation in R/analysis_function.R
 \name{household_dynamics}
 \alias{household_dynamics}
-\title{Fitting household transmission model to the data, based on Markov chain Monte Carlo (MCMC).}
+\title{Fit a household transmission model via MCMC}
 \usage{
 household_dynamics(
   input,
-  inf_factor,
-  sus_factor,
+  inf_factor = NULL,
+  sus_factor = NULL,
   SI,
   n_iteration = 15000,
   burnin = 5000,
@@ -15,31 +15,80 @@ household_dynamics(
 )
 }
 \arguments{
-\item{input}{The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.}
+\item{input}{The input data, in long format (each row is an individual). Required columns:
+\describe{
+  \item{hhID}{Household identifier.}
+  \item{member}{Member index (0 = index case, 1+ = contacts).}
+  \item{size}{Number of individuals in the household.}
+  \item{end}{End date of follow-up for that individual.}
+  \item{inf}{Infection status (1 = infected, 0 = not). Index cases must have \code{inf = 1}.}
+  \item{onset}{Onset time of symptoms.}
+}}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{inf_factor}{Formula for factors affecting infectivity (e.g. \code{~sex} or \code{~sex + age}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
-\item{SI}{The mass function of the serial interval distribution. It should have a length equal to 14.}
+\item{SI}{The mass function of the serial interval distribution. Must be a numeric vector of length 14 summing to approximately 1.}
 
-\item{n_iteration}{The number of iterations of the MCMC.}
+\item{n_iteration}{Total number of MCMC iterations. Default is 15000.}
 
-\item{burnin}{The iteration for burn-in for MCMC.}
+\item{burnin}{Number of initial iterations to discard. Default is 5000.}
 
-\item{thinning}{The number of thinning in MCMC.}
+\item{thinning}{Thinning interval for posterior samples. Default is 1.}
 }
 \value{
-A data frame that stores the estimates from a fitted MCMC.
+An object of class \code{\link{print.hhdynamics_fit}{hhdynamics_fit}}. Use \code{summary()} to get parameter estimates, \code{print()} for a brief overview, and \code{coef()} for posterior means.
 }
 \description{
-The main function to fit the household transmission model to the data, to estimate the probability of infection from the community, probability of person-to-person transmission in households, and factors affecting susceptibility and infectivity.
+The main function to fit the household transmission model to data. Estimates
+the daily probability of infection from the community, the probability of
+person-to-person transmission within households, and effects of covariates
+on infectivity and susceptibility.
+}
+\details{
+The model assumes that each household contact can be infected either from the
+community (at a constant daily rate) or from an infected household member
+(with probability governed by the serial interval distribution). Tertiary
+transmission within households is accounted for. Infection times for
+non-index cases are treated as latent variables and imputed via data
+augmentation during MCMC.
+
+Covariate effects on infectivity and susceptibility enter multiplicatively
+on the log scale. The \code{summary()} method reports exponentiated
+estimates for interpretation as relative risks.
+
+The returned \code{hhdynamics_fit} object stores the full MCMC output,
+enabling custom convergence diagnostics and post-processing. Key fields:
+\describe{
+  \item{\code{$samples}}{Posterior parameter samples (post-burnin, thinned). Columns named by parameter.}
+  \item{\code{$log_likelihood}}{Log-likelihood trace for convergence assessment (full chain).}
+  \item{\code{$acceptance}}{Per-parameter acceptance rates from the Metropolis-Hastings sampler.}
+  \item{\code{$imputed_data}}{Final imputed dataset (wide format) with augmented infection times.}
+}
 }
 \examples{
 \donttest{
-fitted_result <- household_dynamics(inputdata,
-  '~sex', '~age', SI,
-  n_iteration = 15000, burnin = 5000,
-  thinning = 1)
+data(inputdata)
+data(SI)
+
+# Fit with covariates
+fit <- household_dynamics(inputdata, ~sex, ~age, SI,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
+print(fit)
+summary(fit)
+coef(fit)
+
+# Fit without covariates
+fit2 <- household_dynamics(inputdata, SI = SI)
+summary(fit2)
+
+# Access MCMC samples for custom diagnostics
+plot(fit$samples[, "community"], type = "l")
 }
+}
+\seealso{
+\code{\link{simulate_data}} for simulating from the model,
+  \code{\link{create_wide_data}} for data preparation,
+  \code{\link{run_MCMC}} for the low-level MCMC interface.
 }

@@ -2,32 +2,60 @@
 % Please edit documentation in R/analysis_function.R
 \name{simulate_data}
 \alias{simulate_data}
-\title{Simulation of the dataset based on the input dataset and a household transmission model.}
+\title{Simulate household transmission data}
 \usage{
-simulate_data(input, rep_num, inf_factor, sus_factor, SI, para, with_rm)
+simulate_data(
+  input,
+  rep_num,
+  inf_factor = NULL,
+  sus_factor = NULL,
+  SI,
+  para,
+  with_rm
+)
 }
 \arguments{
-\item{input}{The dataset in long format.}
+\item{input}{The dataset in long format (same structure as for \code{\link{household_dynamics}}).}
 
-\item{rep_num}{The number of replications of the input dataset, to increase the sample size. (needs modification later)}
+\item{rep_num}{The number of replications of the input dataset, to increase the sample size.}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{inf_factor}{Formula for factors affecting infectivity (e.g. \code{~sex}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
 \item{SI}{The mass function of the serial interval distribution.}
 
-\item{para}{The parameter vector for the model parameters, in the following format: 1) the random effect of individual infectivity, 2) the probability of infection from the community, 3) the probability of person-to-person transmission in households, 4) the parameter of the relationship between the number of household contacts and transmission, 5 or more: the parameters of relative infectivity or susceptibility.}
+\item{para}{The parameter vector, matching the structure from \code{\link{coef.hhdynamics_fit}}: (1) random effect SD, (2) community rate, (3) household rate, (4) size parameter, (5+) covariate effects.}
 
-\item{with_rm}{Indicator if the model has a random effect on individual infectivity or not.}
+\item{with_rm}{Indicator if the model has a random effect on individual infectivity (1) or not (0).}
 }
 \value{
-A simulated data based on the input parameter vectors, with the format equal to the input data.
+A simulated dataset in wide format (one row per household) based on the input parameter vectors.
 }
 \description{
-This function simulates the dataset for validation or other purposes.
+Generates synthetic datasets from the household transmission model for
+validation, power analysis, or posterior predictive checks.
+}
+\details{
+The simulation uses the same household structure (sizes, follow-up periods,
+covariate values) as the input data. The \code{rep_num} parameter replicates
+the household structure to increase sample size. Infection outcomes and onset
+times are simulated from the model given the parameter vector.
+
+The output is in wide format (one row per household), matching the internal
+representation used by the C++ backend. Use this with \code{run_MCMC()} or
+\code{household_dynamics()} to verify model recovery.
 }
 \examples{
-simulated <- simulate_data(inputdata, 10, '~sex', '~age',
-  SI, para, 0)
+\donttest{
+data(inputdata)
+data(SI)
+para <- c(1, 0.01, 0.1, 0, 0.1, 0.1, 0.1)
+simulated <- simulate_data(inputdata, 10, ~sex, ~age,
+  SI = SI, para = para, with_rm = 0)
+}
+}
+\seealso{
+\code{\link{household_dynamics}} for fitting the model,
+  \code{\link{coef.hhdynamics_fit}} for extracting parameter estimates to use as simulation inputs.
 }

@@ -1,7 +1,7 @@
 Package: hhdynamics
 Type: Package
 Title: Fitting Household Transmission Model to Estimate Household Transmission Dynamics of Influenza
-Version: 1.0
+Version: 1.0.1
 Authors@R: 
     c(person(given = "Tim",
              family = "Tsang",
@@ -25,3 +25,7 @@ LinkingTo:
     RcppParallel
 SystemRequirements: C++11, TBB
 RoxygenNote: 7.2.3
+Suggests:
+    knitr,
+    rmarkdown
+VignetteBuilder: knitr

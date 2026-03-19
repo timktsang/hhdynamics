@@ -735,7 +735,7 @@ NumericVector pro_para(int_para.length());
 
 //####################################################################################################################################
 // main mcmc step
-NumericMatrix updateacceptrate(mcmc_n,20);
+NumericMatrix updateacceptrate(mcmc_n,max_member);
 
 int rownumber=floor((mcmc_n-burnin)/thinning);
 // record the random effect

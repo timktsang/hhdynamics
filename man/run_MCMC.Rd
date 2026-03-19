@@ -2,7 +2,7 @@
 % Please edit documentation in R/analysis_function.R
 \name{run_MCMC}
 \alias{run_MCMC}
-\title{Run the MCMC for the household transmission}
+\title{Run the MCMC for the household transmission model}
 \usage{
 run_MCMC(
   data_w,
@@ -16,31 +16,58 @@ run_MCMC(
 )
 }
 \arguments{
-\item{data_w}{The input data, in long format (each row is an individual). The data must include: 1) hhID: the household id, 2) member: the member id in a household, using 0 to index, 1 and so on as household contact, 3) size: the number of individuals in the households, 4) end: the end date of follow-up for that individual, 5) inf: the infection status of the member. By definition, the index must be infected. 6) onset: the onset time of the individual. The data must also include the factors affecting infectivity or susceptibility that may be explored.}
+\item{data_w}{The input data, in wide format (each row is a household), as produced by \code{\link{create_wide_data}}.}
 
 \item{SI}{The mass function of the serial interval distribution.}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 
-\item{burnin}{The iteration for burn-in for MCMC.}
+\item{burnin}{The number of burn-in iterations to discard.}
 
-\item{thinning}{The number of thinning in MCMC.}
+\item{thinning}{The thinning interval for posterior samples.}
 
 \item{n_inf}{The number of parameters affecting infectivity in the model.}
 
 \item{n_sus}{The number of parameters affecting susceptibility in the model.}
 
-\item{with_rm}{Indicator if the model has a random effect on individual infectivity or not.}
+\item{with_rm}{Indicator if the model has a random effect on individual infectivity (1) or not (0).}
 }
 \value{
-A matrix that stores the posterior samples for the model parameter.
+A list with 6 elements from the C++ MCMC:
+\enumerate{
+  \item Posterior samples matrix (post-burnin, thinned)
+  \item Log-likelihood matrix (full chain, 3 columns: total, component 1, component 2)
+  \item Random effect samples (post-burnin; empty if \code{with_rm = 0})
+  \item Acceptance rates (per-parameter, numeric vector)
+  \item Infection-time update acceptance rates (iterations x household members)
+  \item Final imputed data matrix
+}
 }
 \description{
-This function runs the MCMC for the household transmission model. It is used in the main function.
+Low-level function that runs the C++ MCMC sampler. Most users should use
+\code{\link{household_dynamics}} instead, which handles data preparation,
+validation, and returns an S3 object with named parameters.
+}
+\details{
+The MCMC uses a Metropolis-Hastings algorithm with adaptive proposal variances.
+After 500 iterations, proposal standard deviations are set to the empirical
+posterior standard deviation, with multiplicative tuning based on acceptance rate
+(target: 20--30\%). Infection times for household contacts are jointly updated
+at each iteration via a data augmentation step.
+
+The parameter vector has the following structure:
+\enumerate{
+  \item Standard deviation of random effect on infectivity (fixed at initial value if \code{with_rm = 0})
+  \item Rate of infection from community (log scale)
+  \item Rate of person-to-person transmission in households (log scale)
+  \item Household size parameter (currently fixed at 0)
+  \item Infectivity covariate effects (\code{n_inf} parameters)
+  \item Susceptibility covariate effects (\code{n_sus} parameters)
+}
 }
 \examples{
 \donttest{
-result_list <- create_wide_data(inputdata, '~sex', '~age')
+result_list <- create_wide_data(inputdata, ~sex, ~age)
 data_w <- result_list[[1]]
 n_inf <- result_list[[2]]
 n_sus <- result_list[[3]]
@@ -48,4 +75,8 @@ mcmc_result <- run_MCMC(data_w, SI,
   n_iteration = 15000, burnin = 5000,
   thinning = 1, n_inf, n_sus, with_rm = 0)
 }
+}
+\seealso{
+\code{\link{household_dynamics}} for the high-level interface,
+  \code{\link{create_wide_data}} for data preparation.
 }

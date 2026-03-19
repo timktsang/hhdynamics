@@ -7,18 +7,34 @@
 create_wide_data(input, inf_factor, sus_factor)
 }
 \arguments{
-\item{input}{The input data, in long format.}
+\item{input}{The input data, in long format. Must contain columns: hhID, member, inf, onset, size, end.}
 
-\item{inf_factor}{Factors affecting infectivity. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{inf_factor}{Formula for factors affecting infectivity (e.g. \code{~sex} or \code{~sex + age}). Use \code{NULL} for no factors.}
 
-\item{sus_factor}{Factors affecting susceptibility. Use the format of '~ factor1 + factor2'. If no factor, please use '~'}
+\item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors.}
 }
 \value{
-A data frame in the wide format.
+A list with 3 elements: (1) data frame in wide format, (2) number of infectivity parameters, (3) number of susceptibility parameters.
 }
 \description{
-This function creates a wide format of the household data (each row is a household), based on the long format of data (each row is an individual), to fit the household transmission model.
+Reshapes long-format household data (one row per individual) into wide format
+(one row per household) for the C++ MCMC backend. Also constructs design
+matrices for infectivity and susceptibility covariates.
+}
+\details{
+The wide-format output has the following column structure per household:
+\itemize{
+  \item Columns 1--5: hhID, size, size (duplicate), index onset, end date
+  \item Columns 6+: per-member blocks of (inf, onset, random effect placeholder,
+    infectivity covariates, susceptibility covariates)
+}
+Missing values (members not present in a household) are filled with -1,
+which the C++ code treats as a sentinel.
 }
 \examples{
-wide_data <- create_wide_data(inputdata,'~sex','~age')
+wide_data <- create_wide_data(inputdata, ~sex, ~age)
+}
+\seealso{
+\code{\link{household_dynamics}} for the high-level interface,
+  \code{\link{run_MCMC}} for the low-level MCMC function.
 }

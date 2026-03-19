@@ -45,10 +45,17 @@ data("SI")
 
 ###### run the MCMC to estimate parameter of the model
 ###### in actual analysis, number of iteration is 15000, burnin is 5000, and thinning is 1
-fit_hh_model <- household_dynamics(inputdata, inf_factor = '~sex', sus_factor = '~age',SI,n_iteration =  15000,burnin = 5000, thinning =  1)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age, SI,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
+summary(fit)
 ```
 
-![The output of the MCMC results.](man/figures/hhresult.png)
+<figure>
+<img src="man/figures/hhresult.png"
+alt="The output of the MCMC results." />
+<figcaption aria-hidden="true">The output of the MCMC
+results.</figcaption>
+</figure>
 
 ## Citation
 

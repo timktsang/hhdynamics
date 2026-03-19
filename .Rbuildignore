@@ -3,3 +3,6 @@
 ^README\.Rmd$
 ^notebook$
 ^\.DS_Store$
+^Rplots\.pdf$
+^README\.html$
+^REPORT\.md$
