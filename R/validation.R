@@ -13,11 +13,44 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
     stop(sprintf("'input' is missing required columns: %s", paste(missing_cols, collapse = ", ")), call. = FALSE)
   }
 
+  # Check no missing values in required columns (onset checked separately below)
+  for (col in setdiff(required_cols, "onset")) {
+    if (any(is.na(input[[col]]))) {
+      n_na <- sum(is.na(input[[col]]))
+      stop(sprintf("Column '%s' has %d missing value(s). This version requires complete data (no NAs in required columns).",
+                    col, n_na), call. = FALSE)
+    }
+  }
+
   # Check index cases are infected
   index_rows <- input$member == 0
   if (any(index_rows)) {
-    if (any(input$inf[index_rows] != 1, na.rm = TRUE)) {
+    if (any(input$inf[index_rows] != 1)) {
       stop("All index cases (member == 0) must be infected (inf == 1).", call. = FALSE)
+    }
+  }
+
+  # Check infected contacts have non-missing onset times
+  infected_contacts <- input$member != 0 & input$inf == 1
+  if (any(infected_contacts)) {
+    bad_onset <- infected_contacts & (is.na(input$onset) | input$onset < 0)
+    if (any(bad_onset)) {
+      n_bad <- sum(bad_onset)
+      stop(sprintf("%d infected contact(s) have missing or negative onset times. This version requires known onset for all infected individuals.",
+                    n_bad), call. = FALSE)
+    }
+  }
+
+  # Check formula covariates have no missing values
+  covariate_vars <- unique(c(
+    if (!is.null(inf_factor)) all.vars(inf_factor),
+    if (!is.null(sus_factor)) all.vars(sus_factor)
+  ))
+  for (v in covariate_vars) {
+    if (v %in% names(input) && any(is.na(input[[v]]))) {
+      n_na <- sum(is.na(input[[v]]))
+      stop(sprintf("Covariate '%s' has %d missing value(s). This version requires complete covariate data.",
+                    v, n_na), call. = FALSE)
     }
   }
 
