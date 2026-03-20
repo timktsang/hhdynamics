@@ -1,3 +1,23 @@
+# hhdynamics 1.1.0
+
+## New features
+
+* **Missing covariate imputation via Bayesian data augmentation.** Factor
+  covariates with missing values (NA) are now automatically imputed during
+  MCMC, jointly with onset time imputation. The MCMC draws from the full
+  conditional distribution at each iteration using a uniform categorical
+  proposal over factor levels. No user action is required — simply pass data
+  with NAs in factor covariates. An informational message reports the number
+  and percentage of missing values per covariate.
+
+## Limitations
+
+* Only categorical (factor) covariates are imputed. Continuous covariates
+  with missing values will still produce an error.
+* Interaction terms (`~sex*age`) are not supported with missing covariate data.
+* The same variable cannot appear in both `inf_factor` and `sus_factor` if it
+  has missing values.
+
 # hhdynamics 1.0.1
 
 ## Breaking changes

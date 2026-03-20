@@ -58,6 +58,12 @@ Covariate effects on infectivity and susceptibility enter multiplicatively
 on the log scale. The \code{summary()} method reports exponentiated
 estimates for interpretation as relative risks.
 
+\strong{Missing covariate imputation:} Factor covariates with missing values
+(\code{NA}) are automatically imputed during MCMC via Bayesian data
+augmentation, using a uniform categorical prior over factor levels. Only
+factor covariates are supported; continuous covariates with \code{NA} will
+produce an error. Interaction terms with missing data are not supported.
+
 The returned \code{hhdynamics_fit} object stores the full MCMC output,
 enabling custom convergence diagnostics and post-processing. Key fields:
 \describe{

@@ -154,6 +154,30 @@ household_dynamics(inputdata, inf_factor = "~sex", SI = SI)
 # Error: 'inf_factor' must be a formula (e.g. ~sex) or NULL.
 ```
 
+## Missing covariate data
+
+`household_dynamics()` automatically imputes missing factor covariates via Bayesian data augmentation during MCMC. Simply pass your data with `NA` values in factor columns:
+
+```{r missing, eval = FALSE}
+# Introduce some missing values
+inputdata_missing <- inputdata
+inputdata_missing$sex[c(5, 12, 30)] <- NA
+inputdata_missing$age[c(8, 20)] <- NA
+
+# Fit as usual — missing values are imputed automatically
+fit_missing <- household_dynamics(inputdata_missing, ~sex, ~age, SI,
+                                  n_iteration = 50000, burnin = 10000, thinning = 10)
+# Note: Covariate 'sex' has 3 missing value(s) (0.2%). These will be imputed during MCMC.
+# Note: Covariate 'age' has 2 missing value(s) (0.1%). These will be imputed during MCMC.
+summary(fit_missing)
+```
+
+**Restrictions:**
+
+- Only factor covariates can have missing values. Continuous covariates with `NA` will produce an error.
+- Interaction terms (`~sex*age`) are not supported when covariates have missing data.
+- The same variable cannot appear in both `inf_factor` and `sus_factor` if it has missing values.
+
 ## Simulation
 
 `simulate_data()` generates synthetic datasets for validation or power analysis:

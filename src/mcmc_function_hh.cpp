@@ -416,6 +416,8 @@ int n_sus;
 int with_rm;
 int sep1;
 int sep2;
+RVector<int> factor_group;
+RVector<int> n_levels_vec;
 // destination vector
 // initialize with source and destination
 AllUpdate(NumericMatrix dataout,
@@ -437,8 +439,10 @@ int n_inf,
 int n_sus,
 int with_rm,
 int sep1,
-int sep2) 
-:dataout(dataout),datapro(datapro),dataorg(dataorg),loglik1out(loglik1out),loglik2out(loglik2out),loglik1pro(loglik1pro),loglik2pro(loglik2pro),mcmcrecord(mcmcrecord),data(data),SI(SI),para(para),member(member),loglik1(loglik1),loglik2(loglik2),temprecord(temprecord),n_inf(n_inf),n_sus(n_sus),with_rm(with_rm),sep1(sep1),sep2(sep2){}
+int sep2,
+IntegerVector factor_group,
+IntegerVector n_levels_vec)
+:dataout(dataout),datapro(datapro),dataorg(dataorg),loglik1out(loglik1out),loglik2out(loglik2out),loglik1pro(loglik1pro),loglik2pro(loglik2pro),mcmcrecord(mcmcrecord),data(data),SI(SI),para(para),member(member),loglik1(loglik1),loglik2(loglik2),temprecord(temprecord),n_inf(n_inf),n_sus(n_sus),with_rm(with_rm),sep1(sep1),sep2(sep2),factor_group(factor_group),n_levels_vec(n_levels_vec){}
 
 void operator()(std::size_t begin, std::size_t end) {
 
@@ -452,92 +456,128 @@ int b5;
 int b6;
 
 if (member<data(b1,1)){
-if ((with_rm==1)||((member!=0)&&(datapro(b1,member*sep2+sep1+1)!=-1))){
-if (data(b1,member*sep2+sep1)==1){
+int n_cov=n_inf+n_sus;
 
-// first update infection time
+// Check if this member has missing covariates in original data
+bool has_missing_cov=false;
+for (int c=0;c<n_cov;++c){
+if (dataorg(b1,member*sep2+sep1+3+c)==-99){
+has_missing_cov=true;
+break;
+}
+}
+
+if ((with_rm==1)||((member!=0)&&(datapro(b1,member*sep2+sep1+1)!=-1))||has_missing_cov){
+bool is_infected=(data(b1,member*sep2+sep1)==1);
+
+if (is_infected||has_missing_cov){
 
 double proratio=0;
 
-
-// the get the propose infection time
-// everyone needs to update infection time
-
-if (member!=0){
+// Propose onset time (only for infected non-index members with missing onset)
+if (is_infected&&member!=0){
 if (dataorg(b1,member*sep2+sep1+1)==-1){
 datapro(b1,member*sep2+sep1+1)=(int)floor(R::runif(0, (data(b1,4)-data(b1,3))))+data(b1,3);
 }
 }
 
-//if (member==0){
-if (with_rm==1){
+// Propose random effect (only for infected members with RM)
+if (is_infected&&with_rm==1){
 datapro(b1,member*sep2+sep1+2)=data(b1,member*sep2+sep1+2)+R::rnorm(0.0,para[0]);
 }
-//}
-//proratio+=log(ILI(data1pro(b1,5+5*member+1)-1,data1(b1,46)))-log(ILI(data1(b1,5+5*member+1)-1,data1(b1,46)));
 
-
-
-
+// Propose covariates (for members with missing covariates)
+if (has_missing_cov){
+for (int c=0;c<n_cov;++c){
+int col_idx=member*sep2+sep1+3+c;
+if (dataorg(b1,col_idx)!=-99) continue;
+int grp=factor_group[c];
+int nlev=n_levels_vec[c];
+// Only process each group once (when we hit its first missing dummy)
+bool is_first_in_group=true;
+for (int c2=0;c2<c;++c2){
+if (factor_group[c2]==grp&&dataorg(b1,member*sep2+sep1+3+c2)==-99){
+is_first_in_group=false;
+break;
+}
+}
+if (!is_first_in_group) continue;
+// Set all dummies in this group to 0
+for (int c2=0;c2<n_cov;++c2){
+if (factor_group[c2]==grp){
+datapro(b1,member*sep2+sep1+3+c2)=0;
+}
+}
+// Draw uniformly from all levels (0=reference, 1..K-1=dummy columns)
+int drawn_level=(int)floor(R::runif(0,nlev));
+if (drawn_level>0){
+int count=0;
+for (int c2=0;c2<n_cov;++c2){
+if (factor_group[c2]==grp){
+++count;
+if (count==drawn_level){
+datapro(b1,member*sep2+sep1+3+c2)=1;
+break;
+}
+}
+}
+}
+}
+// proratio remains 0 (symmetric uniform proposal)
+}
 
 // here compute the likelihood for propose
 // first level is transmission
 
 // b3 is the participant index
 for (b3=datapro(b1,1)-1;b3>=1;--b3){
-loglik1pro(b1,b3)=0;	
-//if (!((datapro(b1,b3*sep2+sep1)==1)&(datapro(b1,b3*sep2+sep1+1)==datapro(b1,sep1+1)))){
+loglik1pro(b1,b3)=0;
 // need to add factor addecting susceptibility
 double sus=0;
-//sus+=para[3]*(datapro(b1,1)==2);
-//sus+=para[6]*(datapro(b1,b3*sep2+sep1+5)<=5);
 if (n_sus>0){
 for (b4=n_sus-1;b4>=0;--b4){
-sus+=para[4+n_inf+b4]*(datapro(b1,b3*sep2+sep1+3+n_inf+b4));	
+sus+=para[4+n_inf+b4]*(datapro(b1,b3*sep2+sep1+3+n_inf+b4));
 }
 }
 
 // the final date for contribution from non-infection
 int finaltime=datapro(b1,4)+1;
 if (datapro(b1,b3*sep2+sep1)==1){
-finaltime=datapro(b1,b3*sep2+sep1+1);	
+finaltime=datapro(b1,b3*sep2+sep1+1);
 }
 
 double h[finaltime-int(datapro(b1,3))];
 // fill the community risk
 for (b2=finaltime-datapro(b1,3)-1;b2>=0;--b2){
-h[b2]=para[1];	
+h[b2]=para[1];
 }
 
 
 for (b4=datapro(b1,1)-1;b4>=0;--b4){
 if ((b4!=b3)&&(datapro(b1,b4*sep2+sep1)==1)){
 for (b5=SI.length()-1;b5>=0;--b5){
-//if (datapro(b1,b4*sep2+sep1+1)+b5<=datapro(b1,4)){
-// if infection date of individual b3 is smaller than the final time	
-if (datapro(b1,b4*sep2+sep1+1)+b5+1<=finaltime){ 
+if (datapro(b1,b4*sep2+sep1+1)+b5+1<=finaltime){
 double hrisk=para[2];
 double inf=0;
 // here need to add factor affecting infectivity
 if (n_inf>0){
 for (b6=n_inf-1;b6>=0;--b6){
-inf+=para[4+b6]*(datapro(b1,b4*sep2+sep1+3+b6));	
+inf+=para[4+b6]*(datapro(b1,b4*sep2+sep1+3+b6));
 }
 }
 hrisk*=exp(inf);
 h[int(datapro(b1,b4*sep2+sep1+1)-datapro(b1,3))+b5]+=hrisk*SI[b5]*exp(datapro(b1,b4*sep2+sep1+2)*(b4>=0))/pow(datapro(b1,1)-1.0,para[3]);;
 }
 }
-}	
 }
-//}
+}
 
 
 for (b2=finaltime-datapro(b1,3)-2;b2>=0;--b2){
-loglik1pro(b1,b3)-=h[b2]*exp(sus);	
+loglik1pro(b1,b3)-=h[b2]*exp(sus);
 }
 if (datapro(b1,b3*sep2+sep1)==1){
-loglik1pro(b1,b3)+=log(1-exp(-h[finaltime-int(datapro(b1,3))-1]*exp(sus)));	
+loglik1pro(b1,b3)+=log(1-exp(-h[finaltime-int(datapro(b1,3))-1]*exp(sus)));
 }
 
 }
@@ -556,28 +596,34 @@ double likold=loglik2(b1,member);
 // don't add level2, beacuse using gibbs sampler
 for (b2=loglik1pro.ncol()-1;b2>=0;--b2){
 liknew+=loglik1pro(b1,b2);
-likold+=loglik1(b1,b2);	
+likold+=loglik1(b1,b2);
 }
 
 
 double loglikratio=liknew-likold;
 double accept_pro=pow(exp(1),loglikratio-proratio);
 mcmcrecord(b1,1)=accept_pro;
-mcmcrecord(b1,2)=loglikratio;	
+mcmcrecord(b1,2)=loglikratio;
 mcmcrecord(b1,3)=proratio;
 if (gen_binom(accept_pro)){
-mcmcrecord(b1,0)=1;	
+mcmcrecord(b1,0)=1;
 // if accept, make the out to the same as the proposal
 dataout(b1,member*sep2+sep1+1)=datapro(b1,member*sep2+sep1+1);
 dataout(b1,member*sep2+sep1+2)=datapro(b1,member*sep2+sep1+2);
+// Copy imputed covariates on accept
+for (int c=0;c<n_cov;++c){
+if (dataorg(b1,member*sep2+sep1+3+c)==-99){
+dataout(b1,member*sep2+sep1+3+c)=datapro(b1,member*sep2+sep1+3+c);
+}
+}
 for (b2=loglik1pro.ncol()-1;b2>=0;--b2){
-loglik1out(b1,b2)=loglik1pro(b1,b2);	
+loglik1out(b1,b2)=loglik1pro(b1,b2);
 }
 // add the lik for rm
 loglik2out(b1,member)=loglik2pro(b1,member);
 }
 else{
-mcmcrecord(b1,0)=-1;	
+mcmcrecord(b1,0)=-1;
 }
 
 }
@@ -597,7 +643,7 @@ mcmcrecord(b1,0)=-1;
 // but not the infection status
 // [[Rcpp::export]]
 List all_update(NumericMatrix data,
-NumericMatrix dataorg,	
+NumericMatrix dataorg,
 NumericVector SI,
 NumericVector para,
 int member,
@@ -607,7 +653,9 @@ int n_inf,
 int n_sus,
 int with_rm,
 int sep1,
-int sep2){
+int sep2,
+IntegerVector factor_group,
+IntegerVector n_levels_vec){
 
 NumericMatrix datapro(clone(data));
 NumericMatrix dataout(clone(data));
@@ -623,7 +671,7 @@ int b1;
 
 
 // call parallel program
-AllUpdate allupdate(dataout,datapro,dataorg,loglik1out,loglik2out,loglik1pro,loglik2pro,mcmcrecord,data,SI,para,member,loglik1,loglik2,temprecord,n_inf,n_sus,with_rm,sep1,sep2);
+AllUpdate allupdate(dataout,datapro,dataorg,loglik1out,loglik2out,loglik1pro,loglik2pro,mcmcrecord,data,SI,para,member,loglik1,loglik2,temprecord,n_inf,n_sus,with_rm,sep1,sep2,factor_group,n_levels_vec);
 // call parallelFor to do the work
 parallelFor(0,data.nrow(),allupdate);
 
@@ -670,7 +718,9 @@ int n_inf,
 int n_sus,
 int with_rm,
 int sep1,
-int sep2){            
+int sep2,
+IntegerVector factor_group,
+IntegerVector n_levels_vec){            
 
 // create the vector for use
 int b0;
@@ -681,10 +731,52 @@ int b2;
 int moveindex;
 int max_member=max(data1(_,1));
 //####################################################################################################################################
-// backup data 
+// backup data
 NumericMatrix data11(clone(data1));
 
-
+// Initialize missing covariates (-99 sentinel) to random valid levels
+int n_cov_total=n_inf+n_sus;
+for (int b1i=0;b1i<data11.nrow();++b1i){
+for (int m=0;m<max_member;++m){
+if (m>=data11(b1i,1)) continue;
+for (int c=0;c<n_cov_total;++c){
+int col_idx=m*sep2+sep1+3+c;
+if (data11(b1i,col_idx)==-99){
+int grp=factor_group[c];
+int nlev=n_levels_vec[c];
+// Only process each group once (first missing dummy in group)
+bool is_first=true;
+for (int c2=0;c2<c;++c2){
+if (factor_group[c2]==grp&&data11(b1i,m*sep2+sep1+3+c2)==-99){
+is_first=false;
+break;
+}
+}
+if (!is_first) continue;
+// Set all dummies in this group to 0
+for (int c2=0;c2<n_cov_total;++c2){
+if (factor_group[c2]==grp){
+data11(b1i,m*sep2+sep1+3+c2)=0;
+}
+}
+// Draw a random level (0=reference, 1..K-1=dummy columns)
+int drawn_level=(int)floor(R::runif(0,nlev));
+if (drawn_level>0){
+int count=0;
+for (int c2=0;c2<n_cov_total;++c2){
+if (factor_group[c2]==grp){
+++count;
+if (count==drawn_level){
+data11(b1i,m*sep2+sep1+3+c2)=1;
+break;
+}
+}
+}
+}
+}
+}
+}
+}
 
 // matrix to record LL
 // need to set number of parameter here
@@ -840,7 +932,7 @@ p_para_r(b0,moveindex)=p_para(b0,b1);
 for (b1=max_member-1;b1>=0;--b1){
 
 // update the individual parameter without changing infection status
-List allupdate=all_update(data11,data1,SI,p_para(b0,_),b1,loglik1,loglik2,n_inf,n_sus,with_rm,sep1,sep2);
+List allupdate=all_update(data11,data1,SI,p_para(b0,_),b1,loglik1,loglik2,n_inf,n_sus,with_rm,sep1,sep2,factor_group,n_levels_vec);
 NumericMatrix tempoutput1=allupdate(0);
 data11=clone(tempoutput1);
 NumericMatrix tempoutput3=allupdate(1);

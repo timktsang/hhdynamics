@@ -14,7 +14,7 @@ create_wide_data(input, inf_factor, sus_factor)
 \item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors.}
 }
 \value{
-A list with 3 elements: (1) data frame in wide format, (2) number of infectivity parameters, (3) number of susceptibility parameters.
+A list with 5 elements: (1) data frame in wide format, (2) number of infectivity parameters, (3) number of susceptibility parameters, (4) integer vector mapping each dummy column to its factor group, (5) integer vector of factor levels per dummy column.
 }
 \description{
 Reshapes long-format household data (one row per individual) into wide format
@@ -29,7 +29,8 @@ The wide-format output has the following column structure per household:
     infectivity covariates, susceptibility covariates)
 }
 Missing values (members not present in a household) are filled with -1,
-which the C++ code treats as a sentinel.
+which the C++ code treats as a sentinel. Missing factor covariates are
+coded as -99 (a distinct sentinel) and will be imputed during MCMC.
 }
 \examples{
 wide_data <- create_wide_data(inputdata, ~sex, ~age)

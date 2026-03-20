@@ -12,7 +12,9 @@ run_MCMC(
   thinning = 1,
   n_inf,
   n_sus,
-  with_rm
+  with_rm,
+  factor_group = integer(0),
+  n_levels_vec = integer(0)
 )
 }
 \arguments{
@@ -31,6 +33,10 @@ run_MCMC(
 \item{n_sus}{The number of parameters affecting susceptibility in the model.}
 
 \item{with_rm}{Indicator if the model has a random effect on individual infectivity (1) or not (0).}
+
+\item{factor_group}{Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).}
+
+\item{n_levels_vec}{Integer vector of the number of levels for each dummy column's factor (from \code{\link{create_wide_data}}).}
 }
 \value{
 A list with 6 elements from the C++ MCMC:

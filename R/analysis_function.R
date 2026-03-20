@@ -29,6 +29,8 @@
 #' @param n_inf The number of parameters affecting infectivity in the model.
 #' @param n_sus The number of parameters affecting susceptibility in the model.
 #' @param with_rm Indicator if the model has a random effect on individual infectivity (1) or not (0).
+#' @param factor_group Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).
+#' @param n_levels_vec Integer vector of the number of levels for each dummy column's factor (from \code{\link{create_wide_data}}).
 #' @return A list with 6 elements from the C++ MCMC:
 #' \enumerate{
 #'   \item Posterior samples matrix (post-burnin, thinned)
@@ -51,7 +53,7 @@
 #'   thinning = 1, n_inf, n_sus, with_rm = 0)
 #' }
 #' @export
-run_MCMC <- function(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm){
+run_MCMC <- function(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm,factor_group=integer(0),n_levels_vec=integer(0)){
 
 keep_iteration <- burnin + 1:((n_iteration - burnin)/thinning)*thinning
 #### put to the MCMC
@@ -72,7 +74,7 @@ sep1 <- 5
 sep2 <- n_inf+n_sus+3 # 3 for onset time and the inf status, and the random effect
 
 start_time <- Sys.time()
-tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2)
+tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2,as.integer(factor_group),as.integer(n_levels_vec))
 end_time <- Sys.time()
 elapsed <- as.numeric(difftime(end_time,start_time,units = "secs"))
 message(paste0('The running time is ',round(elapsed), ' seconds'))
@@ -117,12 +119,13 @@ para_summary <- function(mcmc_samples){
 #'     infectivity covariates, susceptibility covariates)
 #' }
 #' Missing values (members not present in a household) are filled with -1,
-#' which the C++ code treats as a sentinel.
+#' which the C++ code treats as a sentinel. Missing factor covariates are
+#' coded as -99 (a distinct sentinel) and will be imputed during MCMC.
 #'
 #' @param input The input data, in long format. Must contain columns: hhID, member, inf, onset, size, end.
 #' @param inf_factor Formula for factors affecting infectivity (e.g. \code{~sex} or \code{~sex + age}). Use \code{NULL} for no factors.
 #' @param sus_factor Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors.
-#' @return A list with 3 elements: (1) data frame in wide format, (2) number of infectivity parameters, (3) number of susceptibility parameters.
+#' @return A list with 5 elements: (1) data frame in wide format, (2) number of infectivity parameters, (3) number of susceptibility parameters, (4) integer vector mapping each dummy column to its factor group, (5) integer vector of factor levels per dummy column.
 #' @seealso \code{\link{household_dynamics}} for the high-level interface,
 #'   \code{\link{run_MCMC}} for the low-level MCMC function.
 #' @examples
@@ -134,18 +137,49 @@ create_wide_data <- function(input,inf_factor,sus_factor){
   data_a <- input[,c("hhID","member","inf","onset")]
   n_sus <- 0
   n_inf <- 0
+  factor_group <- integer(0)
+  n_levels_vec <- integer(0)
+  group_counter <- 0L
+
   # get the infectivity
   data_a <- cbind(data_a,0)
   if (!is.null(inf_factor)){
-    design_matrix_inf <- model.matrix(inf_factor,input)
+    mf_inf <- stats::model.frame(inf_factor,input,na.action=stats::na.pass)
+    design_matrix_inf <- model.matrix(attr(mf_inf,"terms"),mf_inf)
     n_inf <- ncol(design_matrix_inf)-1
-    data_a <- cbind(data_a,design_matrix_inf[,-1,drop=FALSE])
+    dm_inf <- design_matrix_inf[,-1,drop=FALSE]
+    # Build factor group map for inf covariates
+    assign_inf <- attr(design_matrix_inf,"assign")[-1]
+    unique_terms_inf <- unique(assign_inf)
+    for (ut in unique_terms_inf) {
+      group_counter <- group_counter + 1L
+      n_dummies <- sum(assign_inf == ut)
+      nlev <- n_dummies + 1L
+      factor_group <- c(factor_group, rep(group_counter, n_dummies))
+      n_levels_vec <- c(n_levels_vec, rep(nlev, n_dummies))
+    }
+    # Replace NA with -99 sentinel (distinct from -1 padding)
+    dm_inf[is.na(dm_inf)] <- -99
+    data_a <- cbind(data_a,dm_inf)
   }
   # get the susceptibility
   if (!is.null(sus_factor)){
-    design_matrix_sus <- model.matrix(sus_factor,input)
+    mf_sus <- stats::model.frame(sus_factor,input,na.action=stats::na.pass)
+    design_matrix_sus <- model.matrix(attr(mf_sus,"terms"),mf_sus)
     n_sus <- ncol(design_matrix_sus)-1
-    data_a <- cbind(data_a,design_matrix_sus[,-1,drop=FALSE])
+    dm_sus <- design_matrix_sus[,-1,drop=FALSE]
+    # Build factor group map for sus covariates
+    assign_sus <- attr(design_matrix_sus,"assign")[-1]
+    unique_terms_sus <- unique(assign_sus)
+    for (ut in unique_terms_sus) {
+      group_counter <- group_counter + 1L
+      n_dummies <- sum(assign_sus == ut)
+      nlev <- n_dummies + 1L
+      factor_group <- c(factor_group, rep(group_counter, n_dummies))
+      n_levels_vec <- c(n_levels_vec, rep(nlev, n_dummies))
+    }
+    dm_sus[is.na(dm_sus)] <- -99
+    data_a <- cbind(data_a,dm_sus)
   }
 
 
@@ -153,9 +187,10 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 
   data_w <- merge(input[input$member==0,c("hhID","size","size","onset",'end')],data_w,by='hhID')
 
+  # Set padding NAs to -1 (-99 sentinels for missing covariates are preserved)
   data_w[is.na(data_w)] <- -1
 
-  return(list(data_w,n_inf,n_sus))
+  return(list(data_w,n_inf,n_sus,as.integer(factor_group),as.integer(n_levels_vec)))
 }
 
 
@@ -178,6 +213,12 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 #' Covariate effects on infectivity and susceptibility enter multiplicatively
 #' on the log scale. The \code{summary()} method reports exponentiated
 #' estimates for interpretation as relative risks.
+#'
+#' \strong{Missing covariate imputation:} Factor covariates with missing values
+#' (\code{NA}) are automatically imputed during MCMC via Bayesian data
+#' augmentation, using a uniform categorical prior over factor levels. Only
+#' factor covariates are supported; continuous covariates with \code{NA} will
+#' produce an error. Interaction terms with missing data are not supported.
 #'
 #' The returned \code{hhdynamics_fit} object stores the full MCMC output,
 #' enabling custom convergence diagnostics and post-processing. Key fields:
@@ -236,8 +277,10 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_it
   data_w <- result_list[[1]]
   n_inf <- result_list[[2]]
   n_sus <- result_list[[3]]
+  factor_group <- result_list[[4]]
+  n_levels_vec <- result_list[[5]]
 
-  mcmc_result <- run_MCMC(data_w,SI,n_iteration,burnin,thinning,n_inf,n_sus,with_rm)
+  mcmc_result <- run_MCMC(data_w,SI,n_iteration,burnin,thinning,n_inf,n_sus,with_rm,factor_group,n_levels_vec)
 
   # Build parameter names
   base_names <- c("re_sd", "community", "household", "size_param")

@@ -1,7 +1,7 @@
 Package: hhdynamics
 Type: Package
 Title: Fitting Household Transmission Model to Estimate Household Transmission Dynamics of Influenza
-Version: 1.0.1
+Version: 1.1.0
 Authors@R: 
     c(person(given = "Tim",
              family = "Tsang",

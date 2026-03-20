@@ -41,16 +41,49 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
     }
   }
 
-  # Check formula covariates have no missing values
+  # Check formula covariates — allow NAs for factors (MCMC will impute), error for continuous
   covariate_vars <- unique(c(
     if (!is.null(inf_factor)) all.vars(inf_factor),
     if (!is.null(sus_factor)) all.vars(sus_factor)
   ))
   for (v in covariate_vars) {
     if (v %in% names(input) && any(is.na(input[[v]]))) {
+      if (!is.factor(input[[v]])) {
+        n_na <- sum(is.na(input[[v]]))
+        stop(sprintf("Continuous covariate '%s' has %d missing value(s). Only factor covariates can be imputed. Convert to factor or remove NAs.",
+                      v, n_na), call. = FALSE)
+      }
       n_na <- sum(is.na(input[[v]]))
-      stop(sprintf("Covariate '%s' has %d missing value(s). This version requires complete covariate data.",
-                    v, n_na), call. = FALSE)
+      pct <- round(100 * n_na / nrow(input), 1)
+      message(sprintf("Note: Covariate '%s' has %d missing value(s) (%.1f%%). These will be imputed during MCMC.",
+                      v, n_na, pct))
+    }
+  }
+
+  # Check for interaction terms with missing covariate data
+  for (f in list(inf_factor, sus_factor)) {
+    if (!is.null(f)) {
+      tl <- attr(stats::terms(f), "term.labels")
+      if (any(grepl(":", tl))) {
+        for (v in all.vars(f)) {
+          if (v %in% names(input) && any(is.na(input[[v]]))) {
+            stop("Interaction terms with missing covariate data are not supported. Remove interactions or pre-impute missing values.",
+                 call. = FALSE)
+          }
+        }
+      }
+    }
+  }
+
+  # Check for shared variables with missing values across formulas
+  if (!is.null(inf_factor) && !is.null(sus_factor)) {
+    shared_vars <- intersect(all.vars(inf_factor), all.vars(sus_factor))
+    for (v in shared_vars) {
+      if (v %in% names(input) && any(is.na(input[[v]]))) {
+        stop(sprintf(paste0("Covariate '%s' appears in both inf_factor and sus_factor and has ",
+                            "missing values. This is not supported. Use the variable in only one ",
+                            "formula, or pre-impute the missing values."), v), call. = FALSE)
+      }
     }
   }
 
