@@ -22,22 +22,26 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
     }
   }
 
-  # Check index cases are infected
+  # Check index cases are infected and have onset times
   index_rows <- input$member == 0
   if (any(index_rows)) {
     if (any(input$inf[index_rows] != 1)) {
       stop("All index cases (member == 0) must be infected (inf == 1).", call. = FALSE)
     }
+    if (any(is.na(input$onset[index_rows]))) {
+      stop("Index cases (member == 0) must have non-missing onset times.", call. = FALSE)
+    }
   }
 
-  # Check infected contacts have non-missing onset times
+  # Check onset times for infected contacts
   infected_contacts <- input$member != 0 & input$inf == 1
   if (any(infected_contacts)) {
-    bad_onset <- infected_contacts & (is.na(input$onset) | input$onset < 0)
-    if (any(bad_onset)) {
-      n_bad <- sum(bad_onset)
-      stop(sprintf("%d infected contact(s) have missing or negative onset times. This version requires known onset for all infected individuals.",
-                    n_bad), call. = FALSE)
+    missing_onset <- infected_contacts & is.na(input$onset)
+    if (any(missing_onset)) {
+      n_miss <- sum(missing_onset)
+      n_total <- sum(infected_contacts)
+      message(sprintf("Note: %d of %d infected contact(s) (%.1f%%) have missing onset times. These will be imputed during MCMC.",
+                      n_miss, n_total, 100 * n_miss / n_total))
     }
   }
 

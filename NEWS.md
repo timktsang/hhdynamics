@@ -10,6 +10,13 @@
   C++ function computes the discretized PMF from the Weibull parameters at
   each MCMC iteration.
 
+* **Missing onset time imputation.** Infected household contacts with missing
+  (`NA`) onset times are now automatically imputed during MCMC via Bayesian
+  data augmentation, drawing uniformly from the follow-up window and
+  accepting/rejecting via the full likelihood. An informational message
+  reports the number and percentage of missing onsets. Index case onset
+  times must still be non-missing.
+
 * **SI defaults to bundled influenza serial interval.** The `SI` argument in
   `household_dynamics()`, `run_MCMC()`, and `simulate_data()` now defaults to
   `NULL`, which loads the bundled flu SI from Tsang et al. (2014). Users no

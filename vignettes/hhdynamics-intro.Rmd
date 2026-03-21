@@ -161,9 +161,26 @@ household_dynamics(inputdata, inf_factor = "~sex")
 # Error: 'inf_factor' must be a formula (e.g. ~sex) or NULL.
 ```
 
-## Missing covariate data
+## Missing data handling
 
-`household_dynamics()` automatically imputes missing factor covariates via Bayesian data augmentation during MCMC. Simply pass your data with `NA` values in factor columns:
+### Missing onset times
+
+Infected household contacts with missing (`NA`) onset times are automatically imputed during MCMC. The sampler proposes onset times uniformly within the follow-up window and accepts/rejects via the full likelihood. Index case onsets must be non-missing.
+
+```{r missing_onset, eval = FALSE}
+# Some infected contacts have unknown symptom onset
+inputdata_missing_onset <- inputdata
+infected_contacts <- which(inputdata$member > 0 & inputdata$inf == 1)
+inputdata_missing_onset$onset[infected_contacts[1:5]] <- NA
+
+fit_onset <- household_dynamics(inputdata_missing_onset, ~sex, ~age,
+                                 n_iteration = 50000, burnin = 10000, thinning = 10)
+# Note: 5 of 92 infected contact(s) (5.4%) have missing onset times. These will be imputed during MCMC.
+```
+
+### Missing covariates
+
+`household_dynamics()` also imputes missing factor covariates via Bayesian data augmentation. Simply pass your data with `NA` values in factor columns:
 
 ```{r missing, eval = FALSE}
 # Introduce some missing values

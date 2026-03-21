@@ -790,6 +790,21 @@ break;
 }
 }
 
+// Initialize missing onset times (-1 sentinel) for infected non-index members
+// Draw uniform random onset between index onset and follow-up end
+for (int b1i=0;b1i<data11.nrow();++b1i){
+for (int m=1;m<max_member;++m){
+if (m>=data11(b1i,1)) continue;
+// Check if infected (inf==1) and onset is missing (onset==-1)
+if (data11(b1i,m*sep2+sep1)==1&&data11(b1i,m*sep2+sep1+1)==-1){
+// Draw uniform onset between index onset (col 3) and follow-up end (col 4)
+int idx_onset=(int)data11(b1i,3);
+int end_time=(int)data11(b1i,4);
+data11(b1i,m*sep2+sep1+1)=(int)floor(R::runif(0,(end_time-idx_onset)))+idx_onset;
+}
+}
+}
+
 // matrix to record LL
 // need to set number of parameter here
 NumericMatrix p_para(mcmc_n,int_para.length());
