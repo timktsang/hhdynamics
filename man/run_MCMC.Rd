@@ -33,7 +33,7 @@ run_MCMC(
 
 \item{n_sus}{The number of parameters affecting susceptibility in the model.}
 
-\item{with_rm}{Indicator if the model has a random effect on individual infectivity (1) or not (0).}
+\item{with_rm}{Indicator if the model has a random effect on individual infectivity (1) or not (0). \strong{Experimental:} when \code{with_rm = 1}, the random-effects output records one value per household (index case only), not per individual. A warning is issued at runtime.}
 
 \item{factor_group}{Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).}
 
@@ -46,7 +46,7 @@ A list with 6 elements from the C++ MCMC:
 \enumerate{
   \item Posterior samples matrix (post-burnin, thinned)
   \item Log-likelihood matrix (full chain, 3 columns: total, component 1, component 2)
-  \item Random effect samples (post-burnin; empty if \code{with_rm = 0})
+  \item Random effect samples (post-burnin). When \code{with_rm = 0}, returns a zero-variance placeholder matrix. When \code{with_rm = 1} (\strong{experimental}), returns one random-effect value per household (index case only, not per individual).
   \item Acceptance rates (per-parameter, numeric vector)
   \item Infection-time update acceptance rates (iterations x household members)
   \item Final imputed data matrix

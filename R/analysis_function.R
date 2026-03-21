@@ -28,7 +28,7 @@
 #' @param thinning The thinning interval for posterior samples.
 #' @param n_inf The number of parameters affecting infectivity in the model.
 #' @param n_sus The number of parameters affecting susceptibility in the model.
-#' @param with_rm Indicator if the model has a random effect on individual infectivity (1) or not (0).
+#' @param with_rm Indicator if the model has a random effect on individual infectivity (1) or not (0). \strong{Experimental:} when \code{with_rm = 1}, the random-effects output records one value per household (index case only), not per individual. A warning is issued at runtime.
 #' @param factor_group Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).
 #' @param n_levels_vec Integer vector of the number of levels for each dummy column's factor (from \code{\link{create_wide_data}}).
 #' @param estimate_SI Logical. If \code{TRUE}, jointly estimate Weibull shape/scale for the serial interval. Default is \code{FALSE}.
@@ -36,7 +36,7 @@
 #' \enumerate{
 #'   \item Posterior samples matrix (post-burnin, thinned)
 #'   \item Log-likelihood matrix (full chain, 3 columns: total, component 1, component 2)
-#'   \item Random effect samples (post-burnin; empty if \code{with_rm = 0})
+#'   \item Random effect samples (post-burnin). When \code{with_rm = 0}, returns a zero-variance placeholder matrix. When \code{with_rm = 1} (\strong{experimental}), returns one random-effect value per household (index case only, not per individual).
 #'   \item Acceptance rates (per-parameter, numeric vector)
 #'   \item Infection-time update acceptance rates (iterations x household members)
 #'   \item Final imputed data matrix
