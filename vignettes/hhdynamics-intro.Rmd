@@ -48,26 +48,33 @@ head(inputdata)
 
 ## Serial interval
 
-The model requires a discrete serial interval distribution as a probability mass function of length 14:
+The model uses a discrete serial interval distribution (probability mass function of length 14, one value per day). By default, the bundled influenza serial interval from Tsang et al. (2014) is used:
 
 ```{r si}
 data("SI")
 print(SI)
 barplot(SI, names.arg = 1:14, xlab = "Days", ylab = "Probability",
-        main = "Serial interval distribution")
+        main = "Default serial interval distribution (influenza)")
 ```
+
+You can provide your own SI vector, or let the model estimate it from data (see below).
 
 ## Fitting the model
 
 Use `household_dynamics()` to fit the model. Specify covariates using R formulas:
 
 ```{r fit, eval = FALSE}
-# With covariates
-fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age, SI = SI,
+# With covariates (uses default influenza SI)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
                           n_iteration = 50000, burnin = 10000, thinning = 10)
 
 # Without covariates
-fit <- household_dynamics(inputdata, SI = SI,
+fit <- household_dynamics(inputdata,
+                          n_iteration = 50000, burnin = 10000, thinning = 10)
+
+# With a custom serial interval
+my_SI <- c(0, 0.01, 0.05, 0.15, 0.25, 0.25, 0.15, 0.08, 0.04, 0.015, 0.005, 0, 0, 0)
+fit <- household_dynamics(inputdata, SI = my_SI,
                           n_iteration = 50000, burnin = 10000, thinning = 10)
 ```
 
@@ -142,15 +149,15 @@ hist(fit$samples[, "household"], breaks = 50, probability = TRUE,
 
 ```{r validation, eval = FALSE}
 # Missing column
-household_dynamics(inputdata[, -1], SI = SI)
+household_dynamics(inputdata[, -1])
 # Error: 'input' is missing required columns: hhID
 
 # Wrong formula variable
-household_dynamics(inputdata, inf_factor = ~nonexistent, SI = SI)
+household_dynamics(inputdata, inf_factor = ~nonexistent)
 # Error: Variables in inf_factor not found in input: nonexistent
 
 # Old string syntax (no longer supported)
-household_dynamics(inputdata, inf_factor = "~sex", SI = SI)
+household_dynamics(inputdata, inf_factor = "~sex")
 # Error: 'inf_factor' must be a formula (e.g. ~sex) or NULL.
 ```
 
@@ -165,7 +172,7 @@ inputdata_missing$sex[c(5, 12, 30)] <- NA
 inputdata_missing$age[c(8, 20)] <- NA
 
 # Fit as usual — missing values are imputed automatically
-fit_missing <- household_dynamics(inputdata_missing, ~sex, ~age, SI,
+fit_missing <- household_dynamics(inputdata_missing, ~sex, ~age,
                                   n_iteration = 50000, burnin = 10000, thinning = 10)
 # Note: Covariate 'sex' has 3 missing value(s) (0.2%). These will be imputed during MCMC.
 # Note: Covariate 'age' has 2 missing value(s) (0.1%). These will be imputed during MCMC.
@@ -178,6 +185,27 @@ summary(fit_missing)
 - Interaction terms (`~sex*age`) are not supported when covariates have missing data.
 - The same variable cannot appear in both `inf_factor` and `sus_factor` if it has missing values.
 
+## Estimating the serial interval
+
+If the serial interval is unknown or you want to estimate it jointly with the transmission parameters, set `estimate_SI = TRUE`. The model parameterizes the SI as a Weibull distribution and estimates the shape and scale parameters via MCMC:
+
+```{r estimate_si, eval = FALSE}
+fit_si <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
+                              n_iteration = 50000, burnin = 10000, thinning = 10,
+                              estimate_SI = TRUE)
+summary(fit_si)
+# Output now includes si_shape and si_scale parameters
+
+# Reconstruct the estimated SI distribution
+est_shape <- mean(fit_si$samples[, "si_shape"])
+est_scale <- mean(fit_si$samples[, "si_scale"])
+est_SI <- pweibull(2:15, est_shape, est_scale) - pweibull(1:14, est_shape, est_scale)
+barplot(est_SI, names.arg = 1:14, xlab = "Days", ylab = "Probability",
+        main = "Estimated serial interval")
+```
+
+The Weibull priors are: shape ~ Uniform(0.1, 10), scale ~ Uniform(0.1, 20). When `estimate_SI = TRUE`, the `SI` argument is not used.
+
 ## Simulation
 
 `simulate_data()` generates synthetic datasets for validation or power analysis:
@@ -188,5 +216,5 @@ para <- coef(fit)
 
 # Simulate 10 replicates of the original data structure
 sim <- simulate_data(inputdata, rep_num = 10, inf_factor = ~sex, sus_factor = ~age,
-                     SI = SI, para = para, with_rm = 0)
+                     para = para, with_rm = 0)
 ```

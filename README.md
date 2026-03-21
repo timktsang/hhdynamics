@@ -33,21 +33,27 @@ library(hhdynamics)
 
 ## Example
 
-This is a basic example of how to load a data from household
-transmission study and fitting the model using the MCMC framework.
+This is a basic example of how to load data from a household
+transmission study and fit the model using the MCMC framework.
 
 ``` r
 library(hhdynamics)
-
-## Load in the example data and the serial interval distribution.
 data("inputdata")
-data("SI")
 
-###### run the MCMC to estimate parameter of the model
-###### in actual analysis, number of iteration is 15000, burnin is 5000, and thinning is 1
-fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age, SI,
+# Fit with covariates (uses default influenza serial interval)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
   n_iteration = 15000, burnin = 5000, thinning = 1)
 summary(fit)
+
+# Jointly estimate the serial interval from data
+fit_si <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
+  n_iteration = 15000, burnin = 5000, thinning = 1, estimate_SI = TRUE)
+summary(fit_si)  # includes si_shape and si_scale
+
+# Use a custom serial interval
+my_SI <- c(0, 0.01, 0.05, 0.15, 0.25, 0.25, 0.15, 0.08, 0.04, 0.015, 0.005, 0, 0, 0)
+fit_custom <- household_dynamics(inputdata, SI = my_SI,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
 ```
 
 <figure>
@@ -59,7 +65,7 @@ results.</figcaption>
 
 ## Development
 
-Code development assisted by AI tools (Claude, Anthropic).
+Code development assisted by AI tools (Claude, Anthropic; Codex, OpenAI).
 
 ## Citation
 

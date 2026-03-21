@@ -22,7 +22,7 @@
 #' }
 #'
 #' @param data_w The input data, in wide format (each row is a household), as produced by \code{\link{create_wide_data}}.
-#' @param SI The mass function of the serial interval distribution.
+#' @param SI The mass function of the serial interval distribution. Defaults to the bundled influenza serial interval from Tsang et al. (2014).
 #' @param n_iteration The number of iterations of the MCMC.
 #' @param burnin The number of burn-in iterations to discard.
 #' @param thinning The thinning interval for posterior samples.
@@ -31,6 +31,7 @@
 #' @param with_rm Indicator if the model has a random effect on individual infectivity (1) or not (0).
 #' @param factor_group Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).
 #' @param n_levels_vec Integer vector of the number of levels for each dummy column's factor (from \code{\link{create_wide_data}}).
+#' @param estimate_SI Logical. If \code{TRUE}, jointly estimate Weibull shape/scale for the serial interval. Default is \code{FALSE}.
 #' @return A list with 6 elements from the C++ MCMC:
 #' \enumerate{
 #'   \item Posterior samples matrix (post-burnin, thinned)
@@ -48,12 +49,18 @@
 #' data_w <- result_list[[1]]
 #' n_inf <- result_list[[2]]
 #' n_sus <- result_list[[3]]
-#' mcmc_result <- run_MCMC(data_w, SI,
+#' mcmc_result <- run_MCMC(data_w,
 #'   n_iteration = 15000, burnin = 5000,
-#'   thinning = 1, n_inf, n_sus, with_rm = 0)
+#'   thinning = 1, n_inf = n_inf, n_sus = n_sus, with_rm = 0)
 #' }
 #' @export
-run_MCMC <- function(data_w,SI,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm,factor_group=integer(0),n_levels_vec=integer(0)){
+run_MCMC <- function(data_w,SI = NULL,n_iteration = 15000,burnin = 5000,thinning = 1,n_inf,n_sus,with_rm,factor_group=integer(0),n_levels_vec=integer(0),estimate_SI=FALSE){
+  if (is.null(SI)) {
+    SI <- hhdynamics::SI
+  }
+  if (with_rm == 1) {
+    warning("Random effects (with_rm = 1) is experimental. The random-effects output records one value per household (index case only), not per individual. Use with caution.", call. = FALSE)
+  }
 
 keep_iteration <- burnin + 1:((n_iteration - burnin)/thinning)*thinning
 #### put to the MCMC
@@ -66,6 +73,11 @@ keep_iteration <- burnin + 1:((n_iteration - burnin)/thinning)*thinning
 
 para <-  c(1,0.01,0.1,0,rep(0.1,n_inf),rep(0.1,n_sus))
 
+# append Weibull shape/scale if estimating SI
+if (estimate_SI) {
+  para <- c(para, 2.0, 4.0) # initial shape=2, scale=4
+}
+
 sigma <- c(1,rep(0.1,length(para)-1))
 move <- rep(1,length(para))
 move[1] <- with_rm
@@ -74,7 +86,7 @@ sep1 <- 5
 sep2 <- n_inf+n_sus+3 # 3 for onset time and the inf status, and the random effect
 
 start_time <- Sys.time()
-tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2,as.integer(factor_group),as.integer(n_levels_vec))
+tt <- mcmc(as.matrix(data_w),SI,n_iteration,burnin,thinning,para,move,sigma,n_inf,n_sus,with_rm,sep1,sep2,as.integer(factor_group),as.integer(n_levels_vec),as.integer(estimate_SI))
 end_time <- Sys.time()
 elapsed <- as.numeric(difftime(end_time,start_time,units = "secs"))
 message(paste0('The running time is ',round(elapsed), ' seconds'))
@@ -240,37 +252,44 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 #'   }
 #' @param inf_factor Formula for factors affecting infectivity (e.g. \code{~sex} or \code{~sex + age}). Use \code{NULL} for no factors. Default is \code{NULL}.
 #' @param sus_factor Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.
-#' @param SI The mass function of the serial interval distribution. Must be a numeric vector of length 14 summing to approximately 1.
+#' @param SI The mass function of the serial interval distribution. Must be a numeric vector of length 14 summing to approximately 1. Defaults to the bundled influenza serial interval from Tsang et al. (2014). Not used when \code{estimate_SI = TRUE} (SI is estimated from data via Weibull parameterization).
 #' @param n_iteration Total number of MCMC iterations. Default is 15000.
 #' @param burnin Number of initial iterations to discard. Default is 5000.
 #' @param thinning Thinning interval for posterior samples. Default is 1.
-#' @return An object of class \code{\link{print.hhdynamics_fit}{hhdynamics_fit}}. Use \code{summary()} to get parameter estimates, \code{print()} for a brief overview, and \code{coef()} for posterior means.
+#' @param estimate_SI Logical. If \code{TRUE}, jointly estimate the serial interval distribution as a Weibull(shape, scale) alongside other model parameters. Two additional parameters (\code{si_shape}, \code{si_scale}) are added to the MCMC. Priors: shape ~ Uniform(0.1, 10), scale ~ Uniform(0.1, 20). Default is \code{FALSE}.
+#' @return An object of class \code{\link{print.hhdynamics_fit}{hhdynamics_fit}}. Use \code{summary()} to get parameter estimates, \code{print()} for a brief overview, and \code{coef()} for posterior means. When \code{estimate_SI = TRUE}, the output includes \code{si_shape} and \code{si_scale} parameters.
 #' @seealso \code{\link{simulate_data}} for simulating from the model,
 #'   \code{\link{create_wide_data}} for data preparation,
 #'   \code{\link{run_MCMC}} for the low-level MCMC interface.
 #' @examples
 #' \donttest{
 #' data(inputdata)
-#' data(SI)
 #'
-#' # Fit with covariates
-#' fit <- household_dynamics(inputdata, ~sex, ~age, SI,
+#' # Fit with default flu SI
+#' fit <- household_dynamics(inputdata, ~sex, ~age,
 #'   n_iteration = 15000, burnin = 5000, thinning = 1)
 #' print(fit)
 #' summary(fit)
 #' coef(fit)
 #'
-#' # Fit without covariates
-#' fit2 <- household_dynamics(inputdata, SI = SI)
+#' # Fit without covariates (uses default SI)
+#' fit2 <- household_dynamics(inputdata)
 #' summary(fit2)
+#'
+#' # Jointly estimate SI from data
+#' fit3 <- household_dynamics(inputdata, ~sex, ~age, estimate_SI = TRUE)
+#' summary(fit3)  # includes si_shape and si_scale
 #'
 #' # Access MCMC samples for custom diagnostics
 #' plot(fit$samples[, "community"], type = "l")
 #' }
 #' @export
-household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_iteration = 15000,burnin = 5000,thinning = 1){
+household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI = NULL,n_iteration = 15000,burnin = 5000,thinning = 1,estimate_SI = FALSE){
+  if (is.null(SI)) {
+    SI <- hhdynamics::SI
+  }
   with_rm <- 0
-  validate_inputs(input, inf_factor, sus_factor, SI, n_iteration, burnin, thinning, with_rm)
+  validate_inputs(input, inf_factor, sus_factor, SI, n_iteration, burnin, thinning, with_rm, estimate_SI)
 
   result_list <- create_wide_data(input,inf_factor,sus_factor)
 
@@ -280,7 +299,7 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_it
   factor_group <- result_list[[4]]
   n_levels_vec <- result_list[[5]]
 
-  mcmc_result <- run_MCMC(data_w,SI,n_iteration,burnin,thinning,n_inf,n_sus,with_rm,factor_group,n_levels_vec)
+  mcmc_result <- run_MCMC(data_w,SI,n_iteration,burnin,thinning,n_inf,n_sus,with_rm,factor_group,n_levels_vec,estimate_SI)
 
   # Build parameter names
   base_names <- c("re_sd", "community", "household", "size_param")
@@ -290,15 +309,20 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_it
     covariate_names <- character(0)
   }
   param_names <- c(base_names, covariate_names)
+  if (estimate_SI) {
+    param_names <- c(param_names, "si_shape", "si_scale")
+  }
   colnames(mcmc_result[[1]]) <- param_names
 
   # Determine which params get which transform in summary
   # 1=re_sd: none, 2-3=community/household: 1-exp(-x), 4=size: none, 5+=covariates: exp()
   param_transform <- rep("none", length(param_names))
   param_transform[2:3] <- "prob"
-  if (length(param_names) > 4) {
-    param_transform[5:length(param_names)] <- "exp"
+  n_base_plus_cov <- 4 + length(covariate_names)
+  if (length(covariate_names) > 0) {
+    param_transform[5:n_base_plus_cov] <- "exp"
   }
+  # SI params stay "none" (already set)
 
   elapsed <- attr(mcmc_result, "elapsed_time")
 
@@ -349,7 +373,7 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_it
 #' @param inf_factor Formula for factors affecting infectivity (e.g. \code{~sex}). Use \code{NULL} for no factors. Default is \code{NULL}.
 #' @param sus_factor Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.
 #' @param para The parameter vector, matching the structure from \code{\link{coef.hhdynamics_fit}}: (1) random effect SD, (2) community rate, (3) household rate, (4) size parameter, (5+) covariate effects.
-#' @param SI The mass function of the serial interval distribution.
+#' @param SI The mass function of the serial interval distribution. Defaults to the bundled influenza serial interval from Tsang et al. (2014).
 #' @param with_rm Indicator if the model has a random effect on individual infectivity (1) or not (0).
 #' @return A simulated dataset in wide format (one row per household) based on the input parameter vectors.
 #' @seealso \code{\link{household_dynamics}} for fitting the model,
@@ -363,7 +387,10 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI,n_it
 #'   SI = SI, para = para, with_rm = 0)
 #' }
 #' @export
-simulate_data <- function(input,rep_num,inf_factor = NULL,sus_factor = NULL,SI,para,with_rm){
+simulate_data <- function(input,rep_num,inf_factor = NULL,sus_factor = NULL,SI = NULL,para,with_rm){
+  if (is.null(SI)) {
+    SI <- hhdynamics::SI
+  }
 
   create_sim_data <- create_wide_data(input,inf_factor,sus_factor)
   simdata <- create_sim_data[[1]]

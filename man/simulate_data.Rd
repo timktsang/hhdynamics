@@ -9,7 +9,7 @@ simulate_data(
   rep_num,
   inf_factor = NULL,
   sus_factor = NULL,
-  SI,
+  SI = NULL,
   para,
   with_rm
 )
@@ -23,7 +23,7 @@ simulate_data(
 
 \item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
-\item{SI}{The mass function of the serial interval distribution.}
+\item{SI}{The mass function of the serial interval distribution. Defaults to the bundled influenza serial interval from Tsang et al. (2014).}
 
 \item{para}{The parameter vector, matching the structure from \code{\link{coef.hhdynamics_fit}}: (1) random effect SD, (2) community rate, (3) household rate, (4) size parameter, (5+) covariate effects.}
 

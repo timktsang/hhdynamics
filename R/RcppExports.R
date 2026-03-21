@@ -5,8 +5,8 @@ serial_density <- function(p1, p2) {
     .Call(`_hhdynamics_serial_density`, p1, p2)
 }
 
-prior_loglik <- function(para) {
-    .Call(`_hhdynamics_prior_loglik`, para)
+prior_loglik <- function(para, estimate_SI) {
+    .Call(`_hhdynamics_prior_loglik`, para, estimate_SI)
 }
 
 sim_data <- function(data1, SI, para, n_inf, n_sus, with_rm, sep1, sep2) {
@@ -21,7 +21,7 @@ all_update <- function(data, dataorg, SI, para, member, loglik1, loglik2, n_inf,
     .Call(`_hhdynamics_all_update`, data, dataorg, SI, para, member, loglik1, loglik2, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec)
 }
 
-mcmc <- function(data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec) {
-    .Call(`_hhdynamics_mcmc`, data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec)
+mcmc <- function(data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec, estimate_SI) {
+    .Call(`_hhdynamics_mcmc`, data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec, estimate_SI)
 }
 

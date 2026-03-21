@@ -6,7 +6,7 @@
 \usage{
 run_MCMC(
   data_w,
-  SI,
+  SI = NULL,
   n_iteration = 15000,
   burnin = 5000,
   thinning = 1,
@@ -14,13 +14,14 @@ run_MCMC(
   n_sus,
   with_rm,
   factor_group = integer(0),
-  n_levels_vec = integer(0)
+  n_levels_vec = integer(0),
+  estimate_SI = FALSE
 )
 }
 \arguments{
 \item{data_w}{The input data, in wide format (each row is a household), as produced by \code{\link{create_wide_data}}.}
 
-\item{SI}{The mass function of the serial interval distribution.}
+\item{SI}{The mass function of the serial interval distribution. Defaults to the bundled influenza serial interval from Tsang et al. (2014).}
 
 \item{n_iteration}{The number of iterations of the MCMC.}
 
@@ -37,6 +38,8 @@ run_MCMC(
 \item{factor_group}{Integer vector mapping each dummy covariate column to its original factor group (from \code{\link{create_wide_data}}).}
 
 \item{n_levels_vec}{Integer vector of the number of levels for each dummy column's factor (from \code{\link{create_wide_data}}).}
+
+\item{estimate_SI}{Logical. If \code{TRUE}, jointly estimate Weibull shape/scale for the serial interval. Default is \code{FALSE}.}
 }
 \value{
 A list with 6 elements from the C++ MCMC:
@@ -77,9 +80,9 @@ result_list <- create_wide_data(inputdata, ~sex, ~age)
 data_w <- result_list[[1]]
 n_inf <- result_list[[2]]
 n_sus <- result_list[[3]]
-mcmc_result <- run_MCMC(data_w, SI,
+mcmc_result <- run_MCMC(data_w,
   n_iteration = 15000, burnin = 5000,
-  thinning = 1, n_inf, n_sus, with_rm = 0)
+  thinning = 1, n_inf = n_inf, n_sus = n_sus, with_rm = 0)
 }
 }
 \seealso{

@@ -1,6 +1,6 @@
 # Input validation for household_dynamics()
 
-validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burnin, thinning, with_rm) {
+validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burnin, thinning, with_rm, estimate_SI = FALSE) {
   # Check input is a data frame
   if (!is.data.frame(input)) {
     stop("'input' must be a data frame.", call. = FALSE)
@@ -110,19 +110,21 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
     }
   }
 
-  # Check SI
-  if (!is.numeric(SI)) {
-    stop("'SI' must be a numeric vector.", call. = FALSE)
-  }
-  if (length(SI) != 14) {
-    stop(sprintf("'SI' must have length 14, got %d.", length(SI)), call. = FALSE)
-  }
-  if (any(SI < 0)) {
-    stop("'SI' must have all non-negative values.", call. = FALSE)
-  }
-  si_sum <- sum(SI)
-  if (abs(si_sum - 1) > 0.01) {
-    stop(sprintf("'SI' must sum to approximately 1, got %.4f.", si_sum), call. = FALSE)
+  # Check SI (skip when estimating SI from data)
+  if (!estimate_SI) {
+    if (!is.numeric(SI)) {
+      stop("'SI' must be a numeric vector.", call. = FALSE)
+    }
+    if (length(SI) != 14) {
+      stop(sprintf("'SI' must have length 14, got %d.", length(SI)), call. = FALSE)
+    }
+    if (any(SI < 0)) {
+      stop("'SI' must have all non-negative values.", call. = FALSE)
+    }
+    si_sum <- sum(SI)
+    if (abs(si_sum - 1) > 0.01) {
+      stop(sprintf("'SI' must sum to approximately 1, got %.4f.", si_sum), call. = FALSE)
+    }
   }
 
   # Check MCMC parameters

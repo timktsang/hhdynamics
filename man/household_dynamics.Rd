@@ -8,10 +8,11 @@ household_dynamics(
   input,
   inf_factor = NULL,
   sus_factor = NULL,
-  SI,
+  SI = NULL,
   n_iteration = 15000,
   burnin = 5000,
-  thinning = 1
+  thinning = 1,
+  estimate_SI = FALSE
 )
 }
 \arguments{
@@ -29,16 +30,18 @@ household_dynamics(
 
 \item{sus_factor}{Formula for factors affecting susceptibility (e.g. \code{~age}). Use \code{NULL} for no factors. Default is \code{NULL}.}
 
-\item{SI}{The mass function of the serial interval distribution. Must be a numeric vector of length 14 summing to approximately 1.}
+\item{SI}{The mass function of the serial interval distribution. Must be a numeric vector of length 14 summing to approximately 1. Defaults to the bundled influenza serial interval from Tsang et al. (2014). Not used when \code{estimate_SI = TRUE} (SI is estimated from data via Weibull parameterization).}
 
 \item{n_iteration}{Total number of MCMC iterations. Default is 15000.}
 
 \item{burnin}{Number of initial iterations to discard. Default is 5000.}
 
 \item{thinning}{Thinning interval for posterior samples. Default is 1.}
+
+\item{estimate_SI}{Logical. If \code{TRUE}, jointly estimate the serial interval distribution as a Weibull(shape, scale) alongside other model parameters. Two additional parameters (\code{si_shape}, \code{si_scale}) are added to the MCMC. Priors: shape ~ Uniform(0.1, 10), scale ~ Uniform(0.1, 20). Default is \code{FALSE}.}
 }
 \value{
-An object of class \code{\link{print.hhdynamics_fit}{hhdynamics_fit}}. Use \code{summary()} to get parameter estimates, \code{print()} for a brief overview, and \code{coef()} for posterior means.
+An object of class \code{\link{print.hhdynamics_fit}{hhdynamics_fit}}. Use \code{summary()} to get parameter estimates, \code{print()} for a brief overview, and \code{coef()} for posterior means. When \code{estimate_SI = TRUE}, the output includes \code{si_shape} and \code{si_scale} parameters.
 }
 \description{
 The main function to fit the household transmission model to data. Estimates
@@ -76,18 +79,21 @@ enabling custom convergence diagnostics and post-processing. Key fields:
 \examples{
 \donttest{
 data(inputdata)
-data(SI)
 
-# Fit with covariates
-fit <- household_dynamics(inputdata, ~sex, ~age, SI,
+# Fit with default flu SI
+fit <- household_dynamics(inputdata, ~sex, ~age,
   n_iteration = 15000, burnin = 5000, thinning = 1)
 print(fit)
 summary(fit)
 coef(fit)
 
-# Fit without covariates
-fit2 <- household_dynamics(inputdata, SI = SI)
+# Fit without covariates (uses default SI)
+fit2 <- household_dynamics(inputdata)
 summary(fit2)
+
+# Jointly estimate SI from data
+fit3 <- household_dynamics(inputdata, ~sex, ~age, estimate_SI = TRUE)
+summary(fit3)  # includes si_shape and si_scale
 
 # Access MCMC samples for custom diagnostics
 plot(fit$samples[, "community"], type = "l")

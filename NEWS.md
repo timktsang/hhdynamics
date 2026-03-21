@@ -1,3 +1,32 @@
+# hhdynamics 1.2.0
+
+## New features
+
+* **Optional serial interval estimation.** Set `estimate_SI = TRUE` in
+  `household_dynamics()` to jointly estimate the serial interval distribution
+  as a Weibull(shape, scale) alongside other model parameters. Two additional
+  MCMC parameters (`si_shape`, `si_scale`) are sampled. Priors: shape ~
+  Uniform(0.1, 10), scale ~ Uniform(0.1, 20). The existing `serial_density()`
+  C++ function computes the discretized PMF from the Weibull parameters at
+  each MCMC iteration.
+
+* **SI defaults to bundled influenza serial interval.** The `SI` argument in
+  `household_dynamics()`, `run_MCMC()`, and `simulate_data()` now defaults to
+  `NULL`, which loads the bundled flu SI from Tsang et al. (2014). Users no
+  longer need to call `data(SI)` and pass it explicitly.
+
+## Bug fixes
+
+* `simulate_data()` now forces single-threaded execution to avoid
+  thread-unsafe `R::runif` calls in `parallelFor`. This fixes correlated
+  random draws that attenuated covariate effects in simulated data.
+
+## Other
+
+* Added testthat test suite (47 tests across 4 files).
+* `run_MCMC()` now warns when `with_rm = 1` (experimental random-effects
+  branch with known per-household recording limitation).
+
 # hhdynamics 1.1.0
 
 ## New features

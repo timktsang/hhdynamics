@@ -24,13 +24,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // prior_loglik
-double prior_loglik(NumericVector para);
-RcppExport SEXP _hhdynamics_prior_loglik(SEXP paraSEXP) {
+double prior_loglik(NumericVector para, int estimate_SI);
+RcppExport SEXP _hhdynamics_prior_loglik(SEXP paraSEXP, SEXP estimate_SISEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< NumericVector >::type para(paraSEXP);
-    rcpp_result_gen = Rcpp::wrap(prior_loglik(para));
+    Rcpp::traits::input_parameter< int >::type estimate_SI(estimate_SISEXP);
+    rcpp_result_gen = Rcpp::wrap(prior_loglik(para, estimate_SI));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -95,8 +96,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // mcmc
-List mcmc(NumericMatrix data1, NumericVector SI, int mcmc_n, int burnin, int thinning, NumericVector int_para, NumericVector move, NumericVector sigma, int n_inf, int n_sus, int with_rm, int sep1, int sep2, IntegerVector factor_group, IntegerVector n_levels_vec);
-RcppExport SEXP _hhdynamics_mcmc(SEXP data1SEXP, SEXP SISEXP, SEXP mcmc_nSEXP, SEXP burninSEXP, SEXP thinningSEXP, SEXP int_paraSEXP, SEXP moveSEXP, SEXP sigmaSEXP, SEXP n_infSEXP, SEXP n_susSEXP, SEXP with_rmSEXP, SEXP sep1SEXP, SEXP sep2SEXP, SEXP factor_groupSEXP, SEXP n_levels_vecSEXP) {
+List mcmc(NumericMatrix data1, NumericVector SI, int mcmc_n, int burnin, int thinning, NumericVector int_para, NumericVector move, NumericVector sigma, int n_inf, int n_sus, int with_rm, int sep1, int sep2, IntegerVector factor_group, IntegerVector n_levels_vec, int estimate_SI);
+RcppExport SEXP _hhdynamics_mcmc(SEXP data1SEXP, SEXP SISEXP, SEXP mcmc_nSEXP, SEXP burninSEXP, SEXP thinningSEXP, SEXP int_paraSEXP, SEXP moveSEXP, SEXP sigmaSEXP, SEXP n_infSEXP, SEXP n_susSEXP, SEXP with_rmSEXP, SEXP sep1SEXP, SEXP sep2SEXP, SEXP factor_groupSEXP, SEXP n_levels_vecSEXP, SEXP estimate_SISEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -115,18 +116,19 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type sep2(sep2SEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type factor_group(factor_groupSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type n_levels_vec(n_levels_vecSEXP);
-    rcpp_result_gen = Rcpp::wrap(mcmc(data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec));
+    Rcpp::traits::input_parameter< int >::type estimate_SI(estimate_SISEXP);
+    rcpp_result_gen = Rcpp::wrap(mcmc(data1, SI, mcmc_n, burnin, thinning, int_para, move, sigma, n_inf, n_sus, with_rm, sep1, sep2, factor_group, n_levels_vec, estimate_SI));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_hhdynamics_serial_density", (DL_FUNC) &_hhdynamics_serial_density, 2},
-    {"_hhdynamics_prior_loglik", (DL_FUNC) &_hhdynamics_prior_loglik, 1},
+    {"_hhdynamics_prior_loglik", (DL_FUNC) &_hhdynamics_prior_loglik, 2},
     {"_hhdynamics_sim_data", (DL_FUNC) &_hhdynamics_sim_data, 8},
     {"_hhdynamics_loglik", (DL_FUNC) &_hhdynamics_loglik, 8},
     {"_hhdynamics_all_update", (DL_FUNC) &_hhdynamics_all_update, 14},
-    {"_hhdynamics_mcmc", (DL_FUNC) &_hhdynamics_mcmc, 15},
+    {"_hhdynamics_mcmc", (DL_FUNC) &_hhdynamics_mcmc, 16},
     {NULL, NULL, 0}
 };
 

@@ -52,12 +52,12 @@ return b;
 //########################################################################################################################################
 //function to compute the prior likelihood 
 // [[Rcpp::export]]
-double prior_loglik(NumericVector para){
+double prior_loglik(NumericVector para, int estimate_SI){
 // check if the para are within their possible range
 NumericVector out(para.length());
 int b1;
 
-//out(0)=R::dgamma(pow(1.0/para(0),2.0),1.5,1/0.0001,1); 
+//out(0)=R::dgamma(pow(1.0/para(0),2.0),1.5,1/0.0001,1);
 out(0)=R::dunif(para(0),0.009,5.00,1);
 for (b1=2;b1>=1;--b1){
 out(b1)=R::dunif(para(b1),0.000000000000000001,9.99,1);
@@ -65,9 +65,20 @@ out(b1)=R::dunif(para(b1),0.000000000000000001,9.99,1);
 
 out(3)=R::dunif(para(3),0.0,1.0,1);
 
-
-for (b1=para.length()-1;b1>=4;--b1){
+// covariate effects: N(0,3) prior
+int n_regular=para.length();
+if (estimate_SI){
+n_regular-=2; // last 2 are Weibull shape/scale
+}
+for (b1=n_regular-1;b1>=4;--b1){
 out(b1)=R::dnorm(para(b1),0.0,3.0,1);
+}
+
+// SI Weibull priors: shape ~ Uniform(0.1, 10), scale ~ Uniform(0.1, 20)
+if (estimate_SI){
+int si_idx=para.length()-2;
+out(si_idx)=R::dunif(para(si_idx),0.1,10.0,1);
+out(si_idx+1)=R::dunif(para(si_idx+1),0.1,20.0,1);
 }
 
 double output=sum(out);
@@ -720,7 +731,8 @@ int with_rm,
 int sep1,
 int sep2,
 IntegerVector factor_group,
-IntegerVector n_levels_vec){            
+IntegerVector n_levels_vec,
+int estimate_SI){            
 
 // create the vector for use
 int b0;
@@ -801,7 +813,13 @@ NumericMatrix LL2(mcmc_n,3);
 
 //####################################################################################################################################
 // compute likelihood
-List loglikall=loglik(data11,SI,p_para(0,_),n_inf,n_sus,with_rm,sep1,sep2);
+// if estimating SI, recompute from current Weibull params
+NumericVector SI_current=clone(SI);
+if (estimate_SI){
+int si_idx=int_para.length()-2;
+SI_current=serial_density(p_para(0,si_idx),p_para(0,si_idx+1));
+}
+List loglikall=loglik(data11,SI_current,p_para(0,_),n_inf,n_sus,with_rm,sep1,sep2);
 List loglikallpro;
 NumericMatrix loglik1=loglikall(0);
 NumericMatrix loglik2=loglikall(1);
@@ -814,7 +832,7 @@ LL1(0,0)=LL1(0,1)+LL1(0,2);
 
 NumericVector temploglik(3);
 NumericVector newloglik(3);
-temploglik(0)=LL1(0,0)+prior_loglik(p_para(0,_));
+temploglik(0)=LL1(0,0)+prior_loglik(p_para(0,_),estimate_SI);
 temploglik(1)=LL1(0,1);
 temploglik(2)=LL1(0,2);
 
@@ -876,9 +894,14 @@ for (b2=b1-1;b2>=0;--b2){
 pro_para(b2)=p_para(b0,b2);	
 }
 pro_para(b1)+=rnorm(0.0,sigma(b1));
-newloglik(0)=prior_loglik(pro_para);
+newloglik(0)=prior_loglik(pro_para,estimate_SI);
 if (newloglik(0)> -9999999){
-loglikallpro=loglik(data11,SI,pro_para,n_inf,n_sus,with_rm,sep1,sep2);
+// recompute SI from proposed Weibull params if estimating
+if (estimate_SI){
+int si_idx=int_para.length()-2;
+SI_current=serial_density(pro_para[si_idx],pro_para[si_idx+1]);
+}
+loglikallpro=loglik(data11,SI_current,pro_para,n_inf,n_sus,with_rm,sep1,sep2);
 NumericMatrix tempoutput=loglikallpro(0);
 NumericMatrix tempoutput2=loglikallpro(1);
 loglik1pro=clone(tempoutput);
@@ -914,7 +937,7 @@ p_para(b0,b1)=p_para(b0-1,b1);
 }
 }
 
-LL1(b0,0)=temploglik(0)-prior_loglik(p_para(b0,_));
+LL1(b0,0)=temploglik(0)-prior_loglik(p_para(b0,_),estimate_SI);
 LL1(b0,1)=temploglik(1);
 LL1(b0,2)=temploglik(2);
 
@@ -932,7 +955,12 @@ p_para_r(b0,moveindex)=p_para(b0,b1);
 for (b1=max_member-1;b1>=0;--b1){
 
 // update the individual parameter without changing infection status
-List allupdate=all_update(data11,data1,SI,p_para(b0,_),b1,loglik1,loglik2,n_inf,n_sus,with_rm,sep1,sep2,factor_group,n_levels_vec);
+// recompute SI from accepted Weibull params for all_update
+if (estimate_SI){
+int si_idx=int_para.length()-2;
+SI_current=serial_density(p_para(b0,si_idx),p_para(b0,si_idx+1));
+}
+List allupdate=all_update(data11,data1,SI_current,p_para(b0,_),b1,loglik1,loglik2,n_inf,n_sus,with_rm,sep1,sep2,factor_group,n_levels_vec);
 NumericMatrix tempoutput1=allupdate(0);
 data11=clone(tempoutput1);
 NumericMatrix tempoutput3=allupdate(1);
@@ -947,7 +975,7 @@ LL2(b0,1)=sum(loglik1);
 LL2(b0,2)=sum(loglik2);
 LL2(b0,0)=LL2(b0,1)+LL2(b0,2);
 
-temploglik(0)=LL2(b0,0)+prior_loglik(p_para(b0,_));
+temploglik(0)=LL2(b0,0)+prior_loglik(p_para(b0,_),estimate_SI);
 temploglik(1)=LL2(b0,1);
 temploglik(2)=LL2(b0,2);
 

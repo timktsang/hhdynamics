@@ -87,13 +87,19 @@ summary.hhdynamics_fit <- function(object, ...) {
                  "Daily probability of infection from community",
                  "Probability of person-to-person transmission in households",
                  "Parameter of the relationship between transmission and number of household members")
-  if (object$n_inf + object$n_sus > 0) {
+  if (length(object$param_names) > 4) {
     var_names <- c(var_names, object$param_names[5:length(object$param_names)])
   }
   output[, 1] <- var_names
 
   # Clear exp columns for base params (not meaningful)
   output[1:4, 5:7] <- NA
+
+  # Clear exp columns for SI params (reported on natural scale)
+  si_rows <- which(object$param_names %in% c("si_shape", "si_scale"))
+  if (length(si_rows) > 0) {
+    output[si_rows, 5:7] <- NA
+  }
 
   # Drop size parameter row (always fixed at 0)
   output <- output[-4, ]
