@@ -41,6 +41,29 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
     }
   }
 
+  # Check formula arguments (must come before any all.vars/terms calls)
+  if (!is.null(inf_factor)) {
+    if (!inherits(inf_factor, "formula")) {
+      stop("'inf_factor' must be a formula (e.g. ~sex) or NULL.", call. = FALSE)
+    }
+    formula_vars <- all.vars(inf_factor)
+    missing_vars <- setdiff(formula_vars, names(input))
+    if (length(missing_vars) > 0) {
+      stop(sprintf("Variables in inf_factor not found in input: %s", paste(missing_vars, collapse = ", ")), call. = FALSE)
+    }
+  }
+
+  if (!is.null(sus_factor)) {
+    if (!inherits(sus_factor, "formula")) {
+      stop("'sus_factor' must be a formula (e.g. ~age) or NULL.", call. = FALSE)
+    }
+    formula_vars <- all.vars(sus_factor)
+    missing_vars <- setdiff(formula_vars, names(input))
+    if (length(missing_vars) > 0) {
+      stop(sprintf("Variables in sus_factor not found in input: %s", paste(missing_vars, collapse = ", ")), call. = FALSE)
+    }
+  }
+
   # Check formula covariates — allow NAs for factors (MCMC will impute), error for continuous
   covariate_vars <- unique(c(
     if (!is.null(inf_factor)) all.vars(inf_factor),
@@ -84,29 +107,6 @@ validate_inputs <- function(input, inf_factor, sus_factor, SI, n_iteration, burn
                             "missing values. This is not supported. Use the variable in only one ",
                             "formula, or pre-impute the missing values."), v), call. = FALSE)
       }
-    }
-  }
-
-  # Check formula arguments
-  if (!is.null(inf_factor)) {
-    if (!inherits(inf_factor, "formula")) {
-      stop("'inf_factor' must be a formula (e.g. ~sex) or NULL.", call. = FALSE)
-    }
-    formula_vars <- all.vars(inf_factor)
-    missing_vars <- setdiff(formula_vars, names(input))
-    if (length(missing_vars) > 0) {
-      stop(sprintf("Variables in inf_factor not found in input: %s", paste(missing_vars, collapse = ", ")), call. = FALSE)
-    }
-  }
-
-  if (!is.null(sus_factor)) {
-    if (!inherits(sus_factor, "formula")) {
-      stop("'sus_factor' must be a formula (e.g. ~age) or NULL.", call. = FALSE)
-    }
-    formula_vars <- all.vars(sus_factor)
-    missing_vars <- setdiff(formula_vars, names(input))
-    if (length(missing_vars) > 0) {
-      stop(sprintf("Variables in sus_factor not found in input: %s", paste(missing_vars, collapse = ", ")), call. = FALSE)
     }
   }
 

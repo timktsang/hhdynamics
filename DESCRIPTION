@@ -26,6 +26,8 @@ LinkingTo:
 SystemRequirements: C++11, TBB
 RoxygenNote: 7.2.3
 Suggests:
+    testthat (>= 3.0.0),
     knitr,
     rmarkdown
+Config/testthat/edition: 3
 VignetteBuilder: knitr
