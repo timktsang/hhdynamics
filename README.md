@@ -57,6 +57,10 @@ alt="The output of the MCMC results." />
 results.</figcaption>
 </figure>
 
+## Development
+
+Code development assisted by AI tools (Claude, Anthropic).
+
 ## Citation
 
 To cite package **hhdynamics** in publications use:

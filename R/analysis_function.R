@@ -371,6 +371,12 @@ simulate_data <- function(input,rep_num,inf_factor = NULL,sus_factor = NULL,SI,p
   n_inf <- create_sim_data[[2]]
   n_sus <- create_sim_data[[3]]
 
+  # Force single-thread: R::runif inside parallelFor is not thread-safe,
+  # causing correlated random draws and attenuated covariate effects
+  prev_threads <- RcppParallel::defaultNumThreads()
+  RcppParallel::setThreadOptions(numThreads = 1L)
+  on.exit(RcppParallel::setThreadOptions(numThreads = prev_threads), add = TRUE)
+
   c1 <- sim_data(as.matrix(simdata[rep(1:nrow(simdata),rep_num),]),SI,para,n_inf,n_sus,with_rm,5,n_inf+n_sus+3)
 
   return(c1[[1]])
