@@ -6,7 +6,7 @@
                                  param_names, param_transform, n_inf, n_sus,
                                  with_rm, formula_inf, formula_sus, SI,
                                  n_iteration, burnin, thinning, elapsed_time,
-                                 n_households, n_individuals) {
+                                 n_households, n_individuals, input_data = NULL) {
   structure(list(
     samples = samples,
     log_likelihood = log_likelihood,
@@ -27,7 +27,8 @@
     thinning = thinning,
     elapsed_time = elapsed_time,
     n_households = n_households,
-    n_individuals = n_individuals
+    n_individuals = n_individuals,
+    input_data = input_data
   ), class = "hhdynamics_fit")
 }
 

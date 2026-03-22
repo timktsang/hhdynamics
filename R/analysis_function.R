@@ -346,7 +346,8 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI = NU
     thinning = thinning,
     elapsed_time = elapsed,
     n_households = nrow(data_w),
-    n_individuals = nrow(input)
+    n_individuals = nrow(input),
+    input_data = input
   )
 
   return(fit)

@@ -1,3 +1,31 @@
+# hhdynamics 1.3.0
+
+## New features
+
+* **Forest plot for covariate effects.** `plot_covariates(fit)` produces a
+  publication-ready forest plot grouped by Susceptibility and Infectiousness
+  sections, with reference level labels, alternating row shading, and a dashed
+  null line at RR = 1. Optional `file` argument saves a PDF with auto-sized
+  dimensions based on the number of covariate rows. Custom variable and level
+  labels can be supplied via the `labels` argument.
+
+* **Summary tables.** Three new exported functions return clean data frames:
+  `table_parameters(fit)` (posterior mean/median/CrI with ESS and acceptance),
+  `table_covariates(fit)` (covariate effects on the log and exponentiated
+  scale), and `table_attack_rates(fit, by)` (secondary attack rates with Wilson
+  CIs, optionally stratified by a covariate).
+
+## Bug fixes
+
+* Fixed `table_attack_rates()` NA handling: rows with `NA` in the stratifying
+  variable are now correctly excluded from strata and counts (previously
+  `x == NA` returned `NA` rather than `FALSE`, poisoning subset sizes).
+
+* Fixed `.effective_sample_size()` lag indexing: Geyer (1992) pairing now
+  correctly starts at lag 1 (index 2 of R's `acf()` output) rather than lag 0,
+  which was inflating the integrated autocorrelation time by ~2 and causing ESS
+  to be systematically underestimated by roughly half.
+
 # hhdynamics 1.2.0
 
 ## New features
