@@ -1,0 +1,371 @@
+# Getting Started with hhdynamics
+
+## Overview
+
+**hhdynamics** fits a Bayesian household transmission model using MCMC
+to estimate:
+
+- The daily probability of infection from the community
+- The probability of person-to-person transmission within households
+- Effects of covariates on infectivity and susceptibility
+
+The model accounts for tertiary transmission (household contacts
+infecting other household contacts) and uses a serial interval
+distribution to link infection times.
+
+## Data format
+
+Input data must be in long format (one row per individual) with these
+required columns:
+
+| Column   | Description                                                                      |
+|----------|----------------------------------------------------------------------------------|
+| `hhID`   | Household identifier                                                             |
+| `member` | Member index within household (0 = index case, 1, 2, … = contacts)               |
+| `size`   | Number of individuals in the household                                           |
+| `end`    | End date of follow-up for that individual                                        |
+| `inf`    | Infection status (1 = infected, 0 = not infected). Index cases must be infected. |
+| `onset`  | Onset time of symptoms (use -1 or NA for uninfected)                             |
+
+Additional columns can be included as covariates for infectivity or
+susceptibility.
+
+``` r
+library(hhdynamics)
+data("inputdata")
+str(inputdata)
+#> 'data.frame':    1533 obs. of  8 variables:
+#>  $ hhID  : int  1 1 1 100 100 100 100 10005 10005 10005 ...
+#>  $ member: int  0 1 2 0 1 2 3 0 1 2 ...
+#>  $ size  : int  3 3 3 4 4 4 4 3 3 3 ...
+#>  $ end   : int  15 15 15 66 66 66 66 922 922 922 ...
+#>  $ inf   : int  1 0 0 1 0 0 0 1 0 0 ...
+#>  $ onset : int  8 NA NA 57 NA NA NA 913 NA NA ...
+#>  $ age   : Factor w/ 3 levels "0","1","2": 1 1 3 2 1 1 3 1 3 2 ...
+#>  $ sex   : Factor w/ 2 levels "0","1": 2 2 2 1 2 1 1 1 2 2 ...
+head(inputdata)
+#>   hhID member size end inf onset age sex
+#> 1    1      0    3  15   1     8   0   1
+#> 2    1      1    3  15   0    NA   0   1
+#> 3    1      2    3  15   0    NA   2   1
+#> 4  100      0    4  66   1    57   1   0
+#> 5  100      1    4  66   0    NA   0   1
+#> 6  100      2    4  66   0    NA   0   0
+```
+
+## Serial interval
+
+The model uses a discrete serial interval distribution (probability mass
+function of length 14, one value per day). By default, the bundled
+influenza serial interval from Tsang et al. (2014) is used:
+
+``` r
+data("SI")
+print(SI)
+#>  [1] 5.872190e-02 3.155084e-01 4.863670e-01 1.369000e-01 2.502287e-03
+#>  [6] 3.537313e-07 1.257039e-14 0.000000e+00 0.000000e+00 0.000000e+00
+#> [11] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+barplot(SI, names.arg = 1:14, xlab = "Days", ylab = "Probability",
+        main = "Default serial interval distribution (influenza)")
+```
+
+![](hhdynamics-intro_files/figure-html/si-1.png)
+
+You can provide your own SI vector, or let the model estimate it from
+data (see below).
+
+## Fitting the model
+
+Use
+[`household_dynamics()`](https://timktsang.github.io/hhdynamics/reference/household_dynamics.md)
+to fit the model. Specify covariates using R formulas:
+
+``` r
+# With covariates (uses default influenza SI)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
+                          n_iteration = 50000, burnin = 10000, thinning = 10)
+
+# Without covariates
+fit <- household_dynamics(inputdata,
+                          n_iteration = 50000, burnin = 10000, thinning = 10)
+
+# With a custom serial interval
+my_SI <- c(0, 0.01, 0.05, 0.15, 0.25, 0.25, 0.15, 0.08, 0.04, 0.015, 0.005, 0, 0, 0)
+fit <- household_dynamics(inputdata, SI = my_SI,
+                          n_iteration = 50000, burnin = 10000, thinning = 10)
+```
+
+The function returns an `hhdynamics_fit` object containing the full MCMC
+output.
+
+## Inspecting results
+
+### Quick overview
+
+``` r
+print(fit)
+# Household transmission model fit
+#   Data: 386 households, 1533 individuals
+#   MCMC: 4000 post-burnin samples (50000 iterations, burnin: 10000, thin: 10)
+#   Runtime: 85 seconds
+#   Parameters: community, household, sex1.0, age1.0, age2.0
+#
+# Use summary() for estimates, coef() for posterior means.
+```
+
+### Parameter estimates
+
+[`summary()`](https://rdrr.io/r/base/summary.html) returns a table with
+posterior means, 95% credible intervals, and exponentiated estimates for
+covariate effects:
+
+``` r
+summary(fit)
+#                                                    Variable Point estimate Lower bound Upper bound ...
+#               Daily probability of infection from community          0.004       0.002       0.007
+#  Probability of person-to-person transmission in households          0.057       0.034       0.084
+#                                                      sex1.0        -0.081      -0.733       0.488
+#                                                      age1.0        -0.065      -0.537       0.412
+#                                                      age2.0        -0.312      -0.831       0.170
+```
+
+Community and household parameters are reported on the probability scale
+(via `1 - exp(-x)` transform). Covariate effects are on the log scale,
+with exponentiated values also shown.
+
+### Posterior means
+
+``` r
+coef(fit)
+#        re_sd    community    household   size_param       sex1.0       age1.0       age2.0
+#  1.000000000  0.004239978  0.058555948  0.000000000 -0.080689680 -0.065001794 -0.312414284
+```
+
+## Accessing MCMC output
+
+The fit object stores all MCMC output for custom diagnostics and
+post-processing:
+
+``` r
+# Posterior samples matrix (post-burnin, thinned)
+dim(fit$samples)       # e.g. 4000 x 7
+
+# Log-likelihood trace (full chain, for convergence checks)
+dim(fit$log_likelihood) # e.g. 50000 x 3
+
+# Per-parameter acceptance rates
+fit$acceptance
+
+# Trace plot for community parameter
+plot(fit$samples[, "community"], type = "l",
+     ylab = "Community rate", xlab = "Iteration")
+
+# Posterior density
+hist(fit$samples[, "household"], breaks = 50, probability = TRUE,
+     main = "Household transmission probability (raw scale)",
+     xlab = "Rate parameter")
+```
+
+## Visualization
+
+hhdynamics provides several plotting functions for diagnostics and
+publication-ready figures.
+
+### MCMC diagnostics
+
+``` r
+# Trace plots and posterior densities for all parameters
+plot_diagnostics(fit)
+
+# Specific parameters only
+plot_diagnostics(fit, params = c("community", "household"))
+```
+
+### Transmission probability over time
+
+``` r
+# Daily probability of transmission with 95% CrI
+plot_transmission(fit)
+
+# Save to PDF
+plot_transmission(fit, file = "transmission.pdf")
+```
+
+### Covariate effects (forest plot)
+
+``` r
+# Forest plot of covariate effects (relative risks)
+plot_covariates(fit)
+
+# With custom labels for variable headers and factor levels
+plot_covariates(fit, file = "covariates.pdf",
+  labels = list(
+    sex = list(name = "Sex", levels = c("Male", "Female")),
+    age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
+```
+
+The `file` parameter auto-sizes the PDF dimensions based on the number
+of covariates.
+
+### Secondary attack rates
+
+``` r
+# Overall attack rate
+plot_attack_rate(fit)
+
+# Stratified by a single variable
+plot_attack_rate(fit, by = ~age)
+
+# Combine overall + multiple strata in one figure
+plot_attack_rate(fit, by = list(~sex, ~age), include_overall = TRUE,
+  labels = list(
+    sex = list(name = "Sex", levels = c("Male", "Female")),
+    age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
+```
+
+### Household timeline
+
+``` r
+# Visualize a single household: index (triangle), infected contacts
+# (filled circles), uninfected contacts (open circles)
+plot_household(fit, hh_id = 1)
+```
+
+## Summary tables
+
+hhdynamics includes table functions that return data frames suitable for
+reporting.
+
+### Parameter estimates
+
+``` r
+# Posterior mean, median, 95% CrI, and acceptance rate
+table_parameters(fit)
+
+# Include effective sample size
+table_parameters(fit, show_ess = TRUE)
+```
+
+### Covariate effects
+
+``` r
+# Relative risks with 95% CrIs, grouped by infectivity/susceptibility
+table_covariates(fit)
+```
+
+### Secondary attack rates
+
+``` r
+# Overall SAR with Wilson CI
+table_attack_rates(fit)
+
+# Stratified by covariate
+table_attack_rates(fit, by = ~age)
+```
+
+## Input validation
+
+[`household_dynamics()`](https://timktsang.github.io/hhdynamics/reference/household_dynamics.md)
+validates inputs before running the MCMC, catching common errors early:
+
+``` r
+# Missing column
+household_dynamics(inputdata[, -1])
+# Error: 'input' is missing required columns: hhID
+
+# Wrong formula variable
+household_dynamics(inputdata, inf_factor = ~nonexistent)
+# Error: Variables in inf_factor not found in input: nonexistent
+
+# Old string syntax (no longer supported)
+household_dynamics(inputdata, inf_factor = "~sex")
+# Error: 'inf_factor' must be a formula (e.g. ~sex) or NULL.
+```
+
+## Missing data handling
+
+### Missing onset times
+
+Infected household contacts with missing (`NA`) onset times are
+automatically imputed during MCMC. The sampler proposes onset times
+uniformly within the follow-up window and accepts/rejects via the full
+likelihood. Index case onsets must be non-missing.
+
+``` r
+# Some infected contacts have unknown symptom onset
+inputdata_missing_onset <- inputdata
+infected_contacts <- which(inputdata$member > 0 & inputdata$inf == 1)
+inputdata_missing_onset$onset[infected_contacts[1:5]] <- NA
+
+fit_onset <- household_dynamics(inputdata_missing_onset, ~sex, ~age,
+                                 n_iteration = 50000, burnin = 10000, thinning = 10)
+# Note: 5 of 92 infected contact(s) (5.4%) have missing onset times. These will be imputed during MCMC.
+```
+
+### Missing covariates
+
+[`household_dynamics()`](https://timktsang.github.io/hhdynamics/reference/household_dynamics.md)
+also imputes missing factor covariates via Bayesian data augmentation.
+Simply pass your data with `NA` values in factor columns:
+
+``` r
+# Introduce some missing values
+inputdata_missing <- inputdata
+inputdata_missing$sex[c(5, 12, 30)] <- NA
+inputdata_missing$age[c(8, 20)] <- NA
+
+# Fit as usual — missing values are imputed automatically
+fit_missing <- household_dynamics(inputdata_missing, ~sex, ~age,
+                                  n_iteration = 50000, burnin = 10000, thinning = 10)
+# Note: Covariate 'sex' has 3 missing value(s) (0.2%). These will be imputed during MCMC.
+# Note: Covariate 'age' has 2 missing value(s) (0.1%). These will be imputed during MCMC.
+summary(fit_missing)
+```
+
+**Restrictions:**
+
+- Only factor covariates can have missing values. Continuous covariates
+  with `NA` will produce an error.
+- Interaction terms (`~sex*age`) are not supported when covariates have
+  missing data.
+- The same variable cannot appear in both `inf_factor` and `sus_factor`
+  if it has missing values.
+
+## Estimating the serial interval
+
+If the serial interval is unknown or you want to estimate it jointly
+with the transmission parameters, set `estimate_SI = TRUE`. The model
+parameterizes the SI as a Weibull distribution and estimates the shape
+and scale parameters via MCMC:
+
+``` r
+fit_si <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
+                              n_iteration = 50000, burnin = 10000, thinning = 10,
+                              estimate_SI = TRUE)
+summary(fit_si)
+# Output now includes si_shape and si_scale parameters
+
+# Reconstruct the estimated SI distribution
+est_shape <- mean(fit_si$samples[, "si_shape"])
+est_scale <- mean(fit_si$samples[, "si_scale"])
+est_SI <- pweibull(2:15, est_shape, est_scale) - pweibull(1:14, est_shape, est_scale)
+barplot(est_SI, names.arg = 1:14, xlab = "Days", ylab = "Probability",
+        main = "Estimated serial interval")
+```
+
+The Weibull priors are: shape ~ Uniform(0.1, 10), scale ~ Uniform(0.1,
+20). When `estimate_SI = TRUE`, the `SI` argument is not used.
+
+## Simulation
+
+[`simulate_data()`](https://timktsang.github.io/hhdynamics/reference/simulate_data.md)
+generates synthetic datasets for validation or power analysis:
+
+``` r
+# Use fitted parameter values
+para <- coef(fit)
+
+# Simulate 10 replicates of the original data structure
+sim <- simulate_data(inputdata, rep_num = 10, inf_factor = ~sex, sus_factor = ~age,
+                     para = para, with_rm = 0)
+```

@@ -1,0 +1,13 @@
+> summary(fit)
+                                                   Variable Point estimate
+              Daily probability of infection from community          0.004
+ Probability of person-to-person transmission in households          0.058
+                                                     sex1.0         -0.096
+                                                     age1.0         -0.076
+                                                     age2.0         -0.332
+ Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
+       0.002       0.007                  NA               NA               NA
+       0.034       0.086                  NA               NA               NA
+      -0.722       0.499               0.908            0.486            1.648
+      -0.544       0.386               0.927            0.581            1.472
+      -0.840       0.177               0.717            0.432            1.193
