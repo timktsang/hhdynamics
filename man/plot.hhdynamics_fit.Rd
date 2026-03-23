@@ -10,7 +10,7 @@
 \item{x}{An object of class \code{hhdynamics_fit}.}
 
 \item{type}{Type of plot: \code{"diagnostics"} (default), \code{"transmission"},
-  \code{"attack_rate"}, or \code{"covariates"}.}
+\code{"attack_rate"}, or \code{"covariates"}.}
 
 \item{...}{Additional arguments passed to the underlying plot function.}
 }
@@ -19,19 +19,4 @@ Invisible NULL.
 }
 \description{
 Plot method for hhdynamics_fit objects
-}
-\examples{
-\donttest{
-data(inputdata)
-fit <- household_dynamics(inputdata, ~sex, ~age,
-  n_iteration = 15000, burnin = 5000, thinning = 1)
-plot(fit)
-plot(fit, type = "transmission")
-plot(fit, type = "attack_rate")
-plot(fit, type = "covariates")
-}
-}
-\seealso{
-\code{\link{plot_diagnostics}}, \code{\link{plot_transmission}},
-  \code{\link{plot_attack_rate}}, \code{\link{plot_covariates}}
 }

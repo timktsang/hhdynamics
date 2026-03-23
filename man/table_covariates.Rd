@@ -28,6 +28,3 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 table_covariates(fit)
 }
 }
-\seealso{
-\code{\link{table_parameters}}, \code{\link{summary.hhdynamics_fit}}
-}

@@ -10,7 +10,7 @@ table_attack_rates(fit, by = NULL)
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{by}{Formula or character string naming the stratification variable
-  (e.g. \code{~age} or \code{"age"}). Default: no stratification.}
+(e.g. \code{~age} or \code{"age"}). Default: no stratification.}
 }
 \value{
 A data frame with columns: Stratum, N_contacts, N_infected, SAR,
@@ -28,7 +28,4 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 table_attack_rates(fit)
 table_attack_rates(fit, by = ~age)
 }
-}
-\seealso{
-\code{\link{plot_attack_rate}}, \code{\link{table_parameters}}
 }

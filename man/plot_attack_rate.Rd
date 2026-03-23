@@ -4,38 +4,45 @@
 \alias{plot_attack_rate}
 \title{Plot secondary attack rates}
 \usage{
-plot_attack_rate(fit, by = NULL, include_overall = FALSE,
-  labels = NULL, file = NULL, width = 8, height = NULL,
-  xlim = NULL, cex = 0.85, ...)
+plot_attack_rate(
+  fit,
+  by = NULL,
+  include_overall = FALSE,
+  labels = NULL,
+  file = NULL,
+  width = 8,
+  height = NULL,
+  xlim = NULL,
+  cex = 0.85,
+  ...
+)
 }
 \arguments{
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{by}{Formula, character string, or a \emph{list} of formulas naming the
-  stratification variable(s). Examples: \code{~age}, \code{"age"},
-  \code{list(~sex, ~age)}. Default: \code{NULL} (overall SAR only).}
+stratification variable(s). Examples: \code{~age}, \code{"age"},
+\code{list(~sex, ~age)}. Default: \code{NULL} (overall SAR only).}
 
 \item{include_overall}{Logical. When \code{TRUE}, an "Overall" row is
-  prepended even when \code{by} is specified. Default: \code{FALSE}.}
+prepended even when \code{by} is specified. Default: \code{FALSE}.}
 
 \item{labels}{Optional named list of custom display labels for variables
-  and their levels. Each element is a list with \code{name} (display name
-  for the section header) and/or \code{levels} (character vector of level
-  labels in the same order as \code{sort(unique(variable))}). Names must
-  match variable names in the data. Example:
-  \code{list(age = list(name = "Age Group", levels = c("0-5", "6-17", "18+")))}.}
+and their levels. Each element is a list with \code{name} (display name
+for the section header) and/or \code{levels} (character vector of level
+labels in the same order as \code{sort(unique(variable))}). Names must
+match variable names in the data. Example:
+\code{list(age = list(name = "Age Group", levels = c("0-5", "6-17", "18+")))}.}
 
 \item{file}{Optional file path for PDF output. Height is auto-calculated
-  from the number of rows. Default: \code{NULL} (current device).}
+from the number of rows. Default: \code{NULL} (current device).}
 
-\item{width}{PDF width in inches. Default: 8. Only used when \code{file}
-  is not \code{NULL}.}
+\item{width}{PDF width in inches. Default: 8.}
 
-\item{height}{PDF height in inches. Default: \code{0.45 * n_rows + 1.8}.
-  Only used when \code{file} is not \code{NULL}.}
+\item{height}{PDF height in inches. Default: \code{0.45 * n_rows + 1.8}.}
 
 \item{xlim}{Numeric vector of length 2 for the x-axis range (probability
-  scale). Default: auto-determined from the data.}
+scale). Default: auto-determined from the data.}
 
 \item{cex}{Character expansion factor. Default: 0.85.}
 
@@ -70,7 +77,4 @@ plot_attack_rate(fit, by = list(~sex, ~age), include_overall = TRUE,
   labels = list(sex = list(name = "Sex", levels = c("Male", "Female")),
                 age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
 }
-}
-\seealso{
-\code{\link{table_attack_rates}}, \code{\link{plot.hhdynamics_fit}}
 }

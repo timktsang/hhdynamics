@@ -10,10 +10,10 @@ table_parameters(fit, probs = c(0.025, 0.975), show_ess = FALSE)
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{probs}{Numeric vector of length 2 for credible interval bounds.
-  Default: \code{c(0.025, 0.975)} (95\% CrI).}
+Default: \code{c(0.025, 0.975)} (95\% CrI).}
 
 \item{show_ess}{Logical. If \code{TRUE}, include an ESS (effective sample
-  size) column. Default: \code{FALSE}.}
+size) column. Default: \code{FALSE}.}
 }
 \value{
 A data frame with columns: Parameter, Mean, Median, Lower, Upper,
@@ -21,8 +21,8 @@ A data frame with columns: Parameter, Mean, Median, Lower, Upper,
 }
 \description{
 Returns a clean data frame of posterior parameter estimates with credible
-intervals. Community and household parameters are reported on the
-probability scale.
+intervals and effective sample sizes. Community and household parameters
+are reported on the probability scale.
 }
 \examples{
 \donttest{
@@ -31,8 +31,4 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
   n_iteration = 15000, burnin = 5000, thinning = 1)
 table_parameters(fit)
 }
-}
-\seealso{
-\code{\link{table_covariates}}, \code{\link{plot_diagnostics}},
-  \code{\link{summary.hhdynamics_fit}}
 }

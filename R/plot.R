@@ -560,7 +560,7 @@ plot_household <- function(fit, hh_id, col = NULL, ...) {
 #' plot_covariates(fit)
 #'
 #' # Save to PDF with auto-sized dimensions
-#' plot_covariates(fit, file = "covariates.pdf",
+#' plot_covariates(fit, file = tempfile(fileext = ".pdf"),
 #'   labels = list(sex = list(name = "Sex", levels = c("Male", "Female")),
 #'                 age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
 #' }

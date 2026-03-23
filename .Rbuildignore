@@ -6,3 +6,9 @@
 ^Rplots\.pdf$
 ^README\.html$
 ^REPORT\.md$
+^\.github$
+^hhdynamics_.*\.tar\.gz$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^LICENSE$

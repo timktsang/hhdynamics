@@ -1,0 +1,39 @@
+url: https://timktsang.github.io/hhdynamics/
+
+template:
+  bootstrap: 5
+
+reference:
+  - title: Model Fitting
+    contents:
+      - household_dynamics
+      - run_MCMC
+      - create_wide_data
+      - simulate_data
+
+  - title: S3 Methods
+    contents:
+      - print.hhdynamics_fit
+      - summary.hhdynamics_fit
+      - coef.hhdynamics_fit
+      - plot.hhdynamics_fit
+
+  - title: Visualization
+    contents:
+      - plot_diagnostics
+      - plot_transmission
+      - plot_attack_rate
+      - plot_covariates
+      - plot_household
+
+  - title: Tables
+    contents:
+      - table_parameters
+      - table_covariates
+      - table_attack_rates
+
+  - title: Data
+    contents:
+      - inputdata
+      - SI
+      - para

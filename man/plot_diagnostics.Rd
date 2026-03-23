@@ -10,11 +10,11 @@ plot_diagnostics(fit, params = NULL, show_ess = FALSE)
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{params}{Optional character vector of parameter names to plot. If
-  \code{NULL} (default), all estimated parameters are plotted (fixed
-  parameters like \code{size_param} are skipped).}
+\code{NULL} (default), all estimated parameters are plotted (fixed
+parameters like \code{size_param} are skipped).}
 
 \item{show_ess}{Logical. If \code{TRUE}, show the effective sample size
-  (ESS) in the density plot title. Default: \code{FALSE}.}
+(ESS) in the density plot title. Default: \code{FALSE}.}
 }
 \value{
 Invisible NULL. Called for its side effect of producing plots.
@@ -25,7 +25,8 @@ Trace plots show the MCMC chain with the posterior mean (red dashed line).
 Density plots show the marginal posterior with 95\% credible interval bounds
 (blue dashed lines). Set \code{show_ess = TRUE} to annotate with effective
 sample size.
-
+}
+\details{
 Community and household parameters are shown on the probability scale
 (via the \code{1 - exp(-x)} transform).
 }
@@ -37,7 +38,4 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 plot_diagnostics(fit)
 plot_diagnostics(fit, params = c("community", "household"))
 }
-}
-\seealso{
-\code{\link{plot.hhdynamics_fit}}, \code{\link{table_parameters}}
 }

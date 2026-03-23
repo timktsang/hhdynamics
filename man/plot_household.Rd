@@ -12,7 +12,7 @@ plot_household(fit, hh_id, col = NULL, ...)
 \item{hh_id}{Household identifier to visualize.}
 
 \item{col}{Colors for infected and uninfected members.
-  Default: \code{c("firebrick", "grey60")}.}
+Default: \code{c("firebrick", "grey60")}.}
 
 \item{...}{Additional graphical parameters.}
 }
@@ -32,7 +32,4 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
   n_iteration = 15000, burnin = 5000, thinning = 1)
 plot_household(fit, hh_id = 1)
 }
-}
-\seealso{
-\code{\link{plot.hhdynamics_fit}}, \code{\link{household_dynamics}}
 }

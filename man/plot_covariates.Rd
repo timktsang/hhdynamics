@@ -4,35 +4,44 @@
 \alias{plot_covariates}
 \title{Forest plot of covariate effects}
 \usage{
-plot_covariates(fit, probs = c(0.025, 0.975), labels = NULL,
-  file = NULL, width = 11, height = NULL, xlim = NULL,
-  xlab_left = "Lower Risk", xlab_right = "Higher Risk",
-  cex = 0.85, ...)
+plot_covariates(
+  fit,
+  probs = c(0.025, 0.975),
+  labels = NULL,
+  file = NULL,
+  width = 11,
+  height = NULL,
+  xlim = NULL,
+  xlab_left = "Lower Risk",
+  xlab_right = "Higher Risk",
+  cex = 0.85,
+  ...
+)
 }
 \arguments{
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{probs}{Numeric vector of length 2 for credible interval bounds.
-  Default: \code{c(0.025, 0.975)} (95\% CrI).}
+Default: \code{c(0.025, 0.975)} (95\% CrI).}
 
 \item{labels}{Optional named list of custom labels for covariates. Each
-  element is a list with \code{name} (display name for the variable header)
-  and \code{levels} (character vector of level labels, including the
-  reference level first). Names must match variable names in the formula.
-  Example: \code{list(sex = list(name = "Sex", levels = c("Male", "Female")))}.}
+element is a list with \code{name} (display name for the variable header)
+and \code{levels} (character vector of level labels, including the
+reference level first). Names must match variable names in the formula.
+Example: \code{list(sex = list(name = "Sex", levels = c("Male", "Female")))}.}
 
 \item{file}{Optional file path for PDF output. When provided, a PDF is
-  created with auto-calculated width and height based on the number of rows.
-  Default: \code{NULL} (plot to current device).}
+created with auto-calculated width and height based on the number of rows.
+Default: \code{NULL} (plot to current device).}
 
 \item{width}{PDF width in inches. Default: 11. Only used when \code{file}
-  is not \code{NULL}.}
+is not \code{NULL}.}
 
 \item{height}{PDF height in inches. Default: auto-calculated as
-  \code{0.45 * n_rows + 1.8}. Only used when \code{file} is not \code{NULL}.}
+\code{0.45 * n_rows + 1.8}. Only used when \code{file} is not \code{NULL}.}
 
 \item{xlim}{Numeric vector of length 2 for the x-axis range on the natural
-  scale. Default: auto-determined from the credible intervals.}
+scale. Default: auto-determined from the credible intervals.}
 
 \item{xlab_left}{Label for the left direction arrow. Default: \code{"Lower Risk"}.}
 
@@ -50,7 +59,8 @@ Produces a forest plot showing estimated relative risks for covariate effects
 on susceptibility and infectiousness. Covariates are grouped by variable with
 bold headers, reference categories labeled, alternating row shading, and
 estimate text with credible intervals on the right.
-
+}
+\details{
 When \code{file} is provided, the plot is saved to a PDF with dimensions
 automatically calculated from the number of covariate rows. When \code{file}
 is \code{NULL}, the plot is drawn to the current graphics device.
@@ -63,12 +73,8 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 plot_covariates(fit)
 
 # Save to PDF with auto-sized dimensions
-plot_covariates(fit, file = "covariates.pdf",
+plot_covariates(fit, file = tempfile(fileext = ".pdf"),
   labels = list(sex = list(name = "Sex", levels = c("Male", "Female")),
                 age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
 }
-}
-\seealso{
-\code{\link{table_covariates}}, \code{\link{plot.hhdynamics_fit}},
-\code{\link{household_dynamics}}
 }

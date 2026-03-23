@@ -143,6 +143,100 @@ hist(fit$samples[, "household"], breaks = 50, probability = TRUE,
      xlab = "Rate parameter")
 ```
 
+## Visualization
+
+hhdynamics provides several plotting functions for diagnostics and publication-ready figures.
+
+### MCMC diagnostics
+
+```{r plot_diag, eval = FALSE}
+# Trace plots and posterior densities for all parameters
+plot_diagnostics(fit)
+
+# Specific parameters only
+plot_diagnostics(fit, params = c("community", "household"))
+```
+
+### Transmission probability over time
+
+```{r plot_trans, eval = FALSE}
+# Daily probability of transmission with 95% CrI
+plot_transmission(fit)
+
+# Save to PDF
+plot_transmission(fit, file = "transmission.pdf")
+```
+
+### Covariate effects (forest plot)
+
+```{r plot_cov, eval = FALSE}
+# Forest plot of covariate effects (relative risks)
+plot_covariates(fit)
+
+# With custom labels for variable headers and factor levels
+plot_covariates(fit, file = "covariates.pdf",
+  labels = list(
+    sex = list(name = "Sex", levels = c("Male", "Female")),
+    age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
+```
+
+The `file` parameter auto-sizes the PDF dimensions based on the number of covariates.
+
+### Secondary attack rates
+
+```{r plot_sar, eval = FALSE}
+# Overall attack rate
+plot_attack_rate(fit)
+
+# Stratified by a single variable
+plot_attack_rate(fit, by = ~age)
+
+# Combine overall + multiple strata in one figure
+plot_attack_rate(fit, by = list(~sex, ~age), include_overall = TRUE,
+  labels = list(
+    sex = list(name = "Sex", levels = c("Male", "Female")),
+    age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
+```
+
+### Household timeline
+
+```{r plot_hh, eval = FALSE}
+# Visualize a single household: index (triangle), infected contacts
+# (filled circles), uninfected contacts (open circles)
+plot_household(fit, hh_id = 1)
+```
+
+## Summary tables
+
+hhdynamics includes table functions that return data frames suitable for reporting.
+
+### Parameter estimates
+
+```{r tab_param, eval = FALSE}
+# Posterior mean, median, 95% CrI, and acceptance rate
+table_parameters(fit)
+
+# Include effective sample size
+table_parameters(fit, show_ess = TRUE)
+```
+
+### Covariate effects
+
+```{r tab_cov, eval = FALSE}
+# Relative risks with 95% CrIs, grouped by infectivity/susceptibility
+table_covariates(fit)
+```
+
+### Secondary attack rates
+
+```{r tab_sar, eval = FALSE}
+# Overall SAR with Wilson CI
+table_attack_rates(fit)
+
+# Stratified by covariate
+table_attack_rates(fit, by = ~age)
+```
+
 ## Input validation
 
 `household_dynamics()` validates inputs before running the MCMC, catching common errors early:

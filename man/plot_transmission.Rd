@@ -12,7 +12,7 @@ plot_transmission(fit, hh_size = NULL, col = "steelblue", ...)
 \item{hh_size}{Reference household size. Default: median from data.}
 
 \item{col}{Color for the median line and credible interval polygon.
-  Default: \code{"steelblue"}.}
+Default: \code{"steelblue"}.}
 
 \item{...}{Additional graphical parameters passed to \code{plot()}.}
 }
@@ -24,7 +24,8 @@ Shows the daily probability of person-to-person transmission as a function
 of days since the infector's symptom onset. The serial interval distribution
 shapes this curve. The median and 95\% credible interval are computed from
 the posterior samples.
-
+}
+\details{
 When the model was fitted with \code{estimate_SI = TRUE}, the uncertainty
 band incorporates serial interval uncertainty (via the Weibull shape/scale
 posterior).
@@ -36,7 +37,4 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
   n_iteration = 15000, burnin = 5000, thinning = 1)
 plot_transmission(fit)
 }
-}
-\seealso{
-\code{\link{plot.hhdynamics_fit}}, \code{\link{household_dynamics}}
 }

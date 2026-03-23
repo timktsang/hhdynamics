@@ -1,0 +1,21 @@
+bibentry(
+  bibtype  = "Article",
+  title    = "Association between antibody titers and protection against influenza virus infection within households",
+  author   = c(
+    person("Tim K", "Tsang"),
+    person("Simon", "Cauchemez"),
+    person("Ranawaka APM", "Perera"),
+    person("Gertrude", "Freeman"),
+    person("Vicky J", "Fang"),
+    person("Dennis KM", "Ip"),
+    person("Gabriel M", "Leung"),
+    person("J S Malik", "Peiris"),
+    person("Benjamin J", "Cowling")
+  ),
+  journal  = "Journal of Infectious Diseases",
+  year     = "2014",
+  volume   = "210",
+  number   = "5",
+  pages    = "684--692",
+  doi      = "10.1093/infdis/jiu186"
+)

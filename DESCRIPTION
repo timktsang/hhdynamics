@@ -10,7 +10,7 @@ Authors@R:
              comment = c(ORCID = "0000-0001-5037-6776")))
 Maintainer: Tim Tsang <timkltsang@gmail.com>
 Description: A Bayesian household transmission model to estimate household transmission dynamics, with accounting for infection from community and tertiary cases.
-License: GPL (>= 2) + file LICENSE
+License: GPL (>= 2)
 Encoding: UTF-8
 LazyData: TRUE
 URL: https://github.com/timktsang/hhdynamics
@@ -24,7 +24,7 @@ LinkingTo:
     RcppArmadillo,
     RcppParallel
 SystemRequirements: C++11, TBB
-RoxygenNote: 7.2.3
+RoxygenNote: 7.3.3
 Suggests:
     testthat (>= 3.0.0),
     knitr,
