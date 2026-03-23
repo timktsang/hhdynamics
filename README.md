@@ -72,10 +72,14 @@ plot_diagnostics(fit)
 ### Secondary attack rates
 
 ```r
-plot_attack_rate(fit, by = ~age)
+# Combine overall + stratified by sex and age in one figure
+plot_attack_rate(fit, by = list(~sex, ~age), include_overall = TRUE,
+  labels = list(
+    sex = list(name = "Sex", levels = c("Male", "Female")),
+    age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
 ```
 
-<img src="man/figures/attack_rate.png" width="400"/>
+<img src="man/figures/attack_rate.png" width="600"/>
 
 ## Tables
 
@@ -127,4 +131,4 @@ Tsang TK, Cauchemez S, Perera RA, Freeman G, Fang VJ, Ip DK, Leung GM, Malik Pei
 
 ## Development
 
-Code development assisted by AI tools (Codex, OpenAI).
+Code development assisted by AI tools (Claude, Anthropic; Codex, OpenAI).

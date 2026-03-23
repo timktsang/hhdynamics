@@ -184,49 +184,238 @@ plot_transmission <- function(fit, hh_size = NULL, col = "steelblue", ...) {
   invisible(result)
 }
 
-#' Plot secondary attack rates by covariate
+#' Plot secondary attack rates
 #'
-#' Bar plot showing observed secondary attack rates (SAR) with Wilson score
-#' 95\% confidence intervals, optionally stratified by a covariate.
+#' Forest plot showing observed secondary attack rates (SAR) with Wilson score
+#' 95\% confidence intervals. Supports overall SAR, stratification by one or
+#' more covariates, and combinations thereof. Variable names are used as bold
+#' section headers; strata are indented below. The layout mirrors
+#' \code{plot_covariates()}: labels on the left, point estimates and CI bars in
+#' the middle, and \code{n/N} counts plus SAR percentages on the right.
 #'
 #' @param fit An object of class \code{hhdynamics_fit}.
-#' @param by Formula or character string naming the stratification variable
-#'   (e.g. \code{~age} or \code{"age"}). Default: no stratification (overall SAR).
-#' @param col Colors for bars. Default: grey palette.
-#' @param ... Additional graphical parameters.
-#' @return Invisible data frame with the plotted attack rate values.
+#' @param by Formula, character string, or a \emph{list} of formulas naming the
+#'   stratification variable(s). Examples: \code{~age}, \code{"age"},
+#'   \code{list(~sex, ~age)}. Default: \code{NULL} (overall SAR only).
+#' @param include_overall Logical. When \code{TRUE}, an "Overall" row is
+#'   prepended even when \code{by} is specified. Default: \code{FALSE}.
+#' @param labels Optional named list of custom display labels for variables
+#'   and their levels. Each element is a list with \code{name} (display name
+#'   for the section header) and/or \code{levels} (character vector of level
+#'   labels in the same order as \code{sort(unique(variable))}). Names must
+#'   match variable names in the data. Example:
+#'   \code{list(age = list(name = "Age Group", levels = c("0-5", "6-17", "18+")))}.
+#' @param file Optional file path for PDF output. Height is auto-calculated
+#'   from the number of rows. Default: \code{NULL} (current device).
+#' @param width PDF width in inches. Default: 8.
+#' @param height PDF height in inches. Default: \code{0.45 * n_rows + 1.8}.
+#' @param xlim Numeric vector of length 2 for the x-axis range (probability
+#'   scale). Default: auto-determined from the data.
+#' @param cex Character expansion factor. Default: 0.85.
+#' @param ... Additional graphical parameters passed to \code{plot()}.
+#' @return Invisible data frame of the estimate rows (Stratum, N_contacts,
+#'   N_infected, SAR, Lower, Upper).
 #' @examples
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
 #'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'
+#' # Overall only
 #' plot_attack_rate(fit)
+#'
+#' # Stratified by age with section header
 #' plot_attack_rate(fit, by = ~age)
+#'
+#' # Combined: overall + age + sex in one figure
+#' plot_attack_rate(fit, by = list(~sex, ~age), include_overall = TRUE,
+#'   labels = list(sex = list(name = "Sex", levels = c("Male", "Female")),
+#'                 age = list(name = "Age Group", levels = c("0-5", "6-17", "18+"))))
 #' }
 #' @export
-plot_attack_rate <- function(fit, by = NULL, col = NULL, ...) {
-  tab <- table_attack_rates(fit, by = by)
+plot_attack_rate <- function(fit, by = NULL, include_overall = FALSE,
+                             labels = NULL,
+                             file = NULL, width = 8, height = NULL,
+                             xlim = NULL, cex = 0.85, ...) {
 
-  if (is.null(col)) {
-    col <- grDevices::grey.colors(nrow(tab), start = 0.4, end = 0.7)
+  # --- Build row list -------------------------------------------------------
+  rows <- list()
+
+  # Overall row (always shown when by = NULL, or when include_overall = TRUE)
+  if (is.null(by) || include_overall) {
+    tab_ov <- table_attack_rates(fit, by = NULL)
+    rows[[length(rows) + 1]] <- list(
+      type = "estimate", label = "Overall", indented = FALSE,
+      SAR        = tab_ov$SAR,
+      Lower      = tab_ov$Lower,
+      Upper      = tab_ov$Upper,
+      N_infected = tab_ov$N_infected,
+      N_contacts = tab_ov$N_contacts
+    )
   }
 
+  # Per-variable sections
+  if (!is.null(by)) {
+    if (inherits(by, "formula") || is.character(by)) by <- list(by)
+
+    for (f in by) {
+      var_name <- if (inherits(f, "formula")) all.vars(f) else f
+      if (length(var_name) != 1)
+        stop("Each 'by' entry must specify a single variable.", call. = FALSE)
+
+      # Resolve display name and level labels from labels argument
+      var_display   <- var_name
+      custom_levels <- NULL
+      if (!is.null(labels) && var_name %in% names(labels)) {
+        lab <- labels[[var_name]]
+        if (!is.null(lab$name))   var_display   <- lab$name
+        if (!is.null(lab$levels)) custom_levels <- lab$levels
+      }
+
+      # Section header row
+      rows[[length(rows) + 1]] <- list(type = "header", label = var_display)
+
+      # Estimate rows
+      tab <- table_attack_rates(fit, by = if (inherits(f, "formula")) f else stats::as.formula(paste0("~", f)))
+      contacts   <- fit$input_data[fit$input_data$member > 0, ]
+      data_levs  <- as.character(sort(unique(contacts[[var_name]][!is.na(contacts[[var_name]])])))
+
+      for (i in seq_len(nrow(tab))) {
+        strat_lbl <- as.character(tab$Stratum[i])
+        if (!is.null(custom_levels)) {
+          idx <- match(strat_lbl, data_levs)
+          if (!is.na(idx) && idx <= length(custom_levels))
+            strat_lbl <- custom_levels[idx]
+        }
+        rows[[length(rows) + 1]] <- list(
+          type = "estimate", label = strat_lbl, indented = TRUE,
+          SAR        = tab$SAR[i],
+          Lower      = tab$Lower[i],
+          Upper      = tab$Upper[i],
+          N_infected = tab$N_infected[i],
+          N_contacts = tab$N_contacts[i]
+        )
+      }
+    }
+  }
+
+  n_rows <- length(rows)
+
+  # --- Open PDF device -------------------------------------------------------
+  opened_device <- FALSE
+  if (!is.null(file)) {
+    if (is.null(height)) height <- 0.45 * n_rows + 1.8
+    grDevices::pdf(file, width = width, height = height)
+    opened_device <- TRUE
+  }
+
+  # --- X-axis range ----------------------------------------------------------
+  est_rows <- Filter(function(r) r$type == "estimate", rows)
+  all_upper <- sapply(est_rows, function(r) r$Upper)
+  if (is.null(xlim)) {
+    x_max <- min(1, max(all_upper, na.rm = TRUE) * 1.15)
+    x_max <- max(x_max, 0.2)
+    xlim <- c(0, x_max)
+  }
+  dx <- diff(xlim)
+
+  # Coordinate layout: [label region] | [forest 0..xlim[2]] | [n/N] [SAR text]
+  label_x    <- xlim[1] - dx
+  count_x    <- xlim[2] + 0.06 * dx
+  right_edge <- xlim[2] + 0.70 * dx
+
   op <- graphics::par(no.readonly = TRUE)
-  on.exit(graphics::par(op))
-  graphics::par(mar = c(5, 4, 3, 1))
+  on.exit({
+    graphics::par(op)
+    if (opened_device) grDevices::dev.off()
+  })
+  graphics::par(mar = c(0, 0, 0, 0))
 
-  y_max <- min(1, max(tab$Upper, na.rm = TRUE) * 1.2)
-  bp <- graphics::barplot(tab$SAR, names.arg = tab$Stratum,
-                          ylim = c(0, y_max),
-                          col = col,
-                          ylab = "Secondary attack rate",
-                          main = "Observed secondary attack rates",
-                          ...)
-  # Error bars
-  graphics::arrows(bp, tab$Lower, bp, tab$Upper,
-                   angle = 90, code = 3, length = 0.05)
+  y_top    <- n_rows + 1.5
+  y_bottom <- -1.8
+  graphics::plot(0, 0, type = "n",
+                 xlim = c(label_x, right_edge),
+                 ylim = c(y_bottom, y_top),
+                 axes = FALSE, xlab = "", ylab = "", ...)
 
-  invisible(tab)
+  # Column headers
+  header_y <- n_rows + 0.8
+  graphics::text(label_x + 0.04 * dx, header_y, "Stratum",
+                 adj = 0, font = 2, cex = cex)
+  graphics::text(count_x, header_y, "n / N",
+                 adj = 0, font = 2, cex = cex)
+  graphics::text(right_edge, header_y, "SAR",
+                 adj = 1, font = 2, cex = cex)
+  graphics::text(right_edge, header_y - 0.55, "(95% CI)",
+                 adj = 1, cex = cex * 0.85)
+
+  # --- Draw rows -------------------------------------------------------------
+  for (i in seq_len(n_rows)) {
+    row <- rows[[i]]
+    y <- n_rows - i + 0.5
+
+    if (i %% 2 == 0) {
+      graphics::rect(label_x, y - 0.5, right_edge, y + 0.5,
+                     col = grDevices::rgb(0, 0, 0, 0.05), border = NA)
+    }
+
+    if (row$type == "header") {
+      graphics::text(label_x + 0.04 * dx, y, row$label,
+                     adj = 0, font = 2, cex = cex * 0.95)
+
+    } else {
+      indent_x <- if (isTRUE(row$indented)) label_x + 0.16 * dx else label_x + 0.04 * dx
+      graphics::text(indent_x, y, row$label, adj = 0, cex = cex)
+
+      if (!is.na(row$SAR)) {
+        lo <- max(xlim[1], row$Lower)
+        hi <- min(xlim[2], row$Upper)
+        pt <- max(xlim[1], min(xlim[2], row$SAR))
+
+        graphics::points(pt, y, pch = 15, cex = 0.9)
+        graphics::segments(lo, y, hi, y, lwd = 1.5)
+
+        if (row$Lower < xlim[1])
+          graphics::arrows(lo + 0.04 * dx, y, lo, y, length = 0.05)
+        if (row$Upper > xlim[2])
+          graphics::arrows(hi - 0.04 * dx, y, hi, y, length = 0.05)
+      }
+
+      graphics::text(count_x, y,
+                     sprintf("%d / %d", as.integer(row$N_infected), as.integer(row$N_contacts)),
+                     adj = 0, cex = cex * 0.9)
+
+      sar_text <- if (!is.na(row$SAR)) {
+        sprintf("%.1f%% (%.1f, %.1f)",
+                row$SAR * 100, row$Lower * 100, row$Upper * 100)
+      } else "\u2014"
+      graphics::text(right_edge, y, sar_text, adj = 1, cex = cex * 0.9)
+    }
+  }
+
+  # Dashed reference line at x = 0 (spanning estimate rows only)
+  est_idx <- which(sapply(rows, function(r) r$type == "estimate"))
+  if (length(est_idx) > 0) {
+    graphics::segments(0, n_rows - max(est_idx), 0, n_rows - min(est_idx) + 1,
+                       lty = 2, col = "grey60")
+  }
+
+  # X-axis with percentage labels
+  axis_y    <- -0.1
+  tick_vals <- pretty(xlim, n = 5)
+  tick_vals <- tick_vals[tick_vals >= xlim[1] & tick_vals <= xlim[2]]
+  graphics::axis(1, at = tick_vals,
+                 labels = paste0(round(tick_vals * 100), "%"),
+                 pos = axis_y, cex.axis = cex)
+
+  # Return estimate rows as a data frame
+  out <- do.call(rbind, lapply(est_rows, function(r) {
+    data.frame(Stratum = r$label, N_contacts = r$N_contacts,
+               N_infected = r$N_infected, SAR = r$SAR,
+               Lower = r$Lower, Upper = r$Upper, stringsAsFactors = FALSE)
+  }))
+  rownames(out) <- NULL
+  invisible(out)
 }
 
 #' Plot household infection timeline
