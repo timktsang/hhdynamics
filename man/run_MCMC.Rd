@@ -81,7 +81,7 @@ data_w <- result_list[[1]]
 n_inf <- result_list[[2]]
 n_sus <- result_list[[3]]
 mcmc_result <- run_MCMC(data_w,
-  n_iteration = 15000, burnin = 5000,
+  n_iteration = 1000, burnin = 500,
   thinning = 1, n_inf = n_inf, n_sus = n_sus, with_rm = 0)
 }
 }

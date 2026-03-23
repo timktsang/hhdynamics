@@ -50,7 +50,7 @@
 #' n_inf <- result_list[[2]]
 #' n_sus <- result_list[[3]]
 #' mcmc_result <- run_MCMC(data_w,
-#'   n_iteration = 15000, burnin = 5000,
+#'   n_iteration = 1000, burnin = 500,
 #'   thinning = 1, n_inf = n_inf, n_sus = n_sus, with_rm = 0)
 #' }
 #' @export
@@ -58,6 +58,13 @@ run_MCMC <- function(data_w,SI = NULL,n_iteration = 15000,burnin = 5000,thinning
   if (is.null(SI)) {
     SI <- hhdynamics::SI
   }
+
+  # Honour CRAN thread ceiling (RCPP_PARALLEL_NUM_THREADS=2 on CRAN servers)
+  if (nzchar(Sys.getenv("RCPP_PARALLEL_NUM_THREADS"))) {
+    RcppParallel::setThreadOptions(
+      numThreads = as.integer(Sys.getenv("RCPP_PARALLEL_NUM_THREADS")))
+  }
+
   if (with_rm == 1) {
     warning("Random effects (with_rm = 1) is experimental. The random-effects output records one value per household (index case only), not per individual. Use with caution.", call. = FALSE)
   }
@@ -267,21 +274,10 @@ create_wide_data <- function(input,inf_factor,sus_factor){
 #'
 #' # Fit with default flu SI
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' print(fit)
 #' summary(fit)
 #' coef(fit)
-#'
-#' # Fit without covariates (uses default SI)
-#' fit2 <- household_dynamics(inputdata)
-#' summary(fit2)
-#'
-#' # Jointly estimate SI from data
-#' fit3 <- household_dynamics(inputdata, ~sex, ~age, estimate_SI = TRUE)
-#' summary(fit3)  # includes si_shape and si_scale
-#'
-#' # Access MCMC samples for custom diagnostics
-#' plot(fit$samples[, "community"], type = "l")
 #' }
 #' @export
 household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI = NULL,n_iteration = 15000,burnin = 5000,thinning = 1,estimate_SI = FALSE){
@@ -384,7 +380,7 @@ household_dynamics <- function(input,inf_factor = NULL,sus_factor = NULL,SI = NU
 #' data(inputdata)
 #' data(SI)
 #' para <- c(1, 0.01, 0.1, 0, 0.1, 0.1, 0.1)
-#' simulated <- simulate_data(inputdata, 10, ~sex, ~age,
+#' simulated <- simulate_data(inputdata, 2, ~sex, ~age,
 #'   SI = SI, para = para, with_rm = 0)
 #' }
 #' @export

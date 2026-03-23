@@ -24,7 +24,8 @@ Useful links:
 \donttest{
 # Fit a household transmission model
 data(inputdata)
-fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age,
+  n_iteration = 1000, burnin = 500)
 summary(fit)
 }
 }

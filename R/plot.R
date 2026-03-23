@@ -40,7 +40,7 @@ plot.hhdynamics_fit <- function(x, type = "diagnostics", ...) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' plot_diagnostics(fit)
 #' plot_diagnostics(fit, params = c("community", "household"))
 #' }
@@ -118,7 +118,7 @@ plot_diagnostics <- function(fit, params = NULL, show_ess = FALSE) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' plot_transmission(fit)
 #' }
 #' @export
@@ -224,7 +224,7 @@ plot_transmission <- function(fit, hh_size = NULL, col = "steelblue", ...) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #'
 #' # Overall only
 #' plot_attack_rate(fit)
@@ -440,7 +440,7 @@ plot_attack_rate <- function(fit, by = NULL, include_overall = FALSE,
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' plot_household(fit, hh_id = 1)
 #' }
 #' @export
@@ -556,7 +556,7 @@ plot_household <- function(fit, hh_id, col = NULL, ...) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' plot_covariates(fit)
 #'
 #' # Save to PDF with auto-sized dimensions

@@ -12,3 +12,4 @@
 ^docs$
 ^pkgdown$
 ^LICENSE$
+^cran-comments\.md$

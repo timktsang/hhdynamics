@@ -82,21 +82,10 @@ data(inputdata)
 
 # Fit with default flu SI
 fit <- household_dynamics(inputdata, ~sex, ~age,
-  n_iteration = 15000, burnin = 5000, thinning = 1)
+  n_iteration = 1000, burnin = 500, thinning = 1)
 print(fit)
 summary(fit)
 coef(fit)
-
-# Fit without covariates (uses default SI)
-fit2 <- household_dynamics(inputdata)
-summary(fit2)
-
-# Jointly estimate SI from data
-fit3 <- household_dynamics(inputdata, ~sex, ~age, estimate_SI = TRUE)
-summary(fit3)  # includes si_shape and si_scale
-
-# Access MCMC samples for custom diagnostics
-plot(fit$samples[, "community"], type = "l")
 }
 }
 \seealso{

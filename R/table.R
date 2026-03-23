@@ -17,7 +17,7 @@
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' table_parameters(fit)
 #' }
 #' @export
@@ -77,7 +77,7 @@ table_parameters <- function(fit, probs = c(0.025, 0.975), show_ess = FALSE) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' table_covariates(fit)
 #' }
 #' @export
@@ -140,7 +140,7 @@ table_covariates <- function(fit, probs = c(0.025, 0.975)) {
 #' \donttest{
 #' data(inputdata)
 #' fit <- household_dynamics(inputdata, ~sex, ~age,
-#'   n_iteration = 15000, burnin = 5000, thinning = 1)
+#'   n_iteration = 1000, burnin = 500, thinning = 1)
 #' table_attack_rates(fit)
 #' table_attack_rates(fit, by = ~age)
 #' }

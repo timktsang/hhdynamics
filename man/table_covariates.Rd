@@ -24,7 +24,7 @@ with exponentiated estimates interpretable as relative risks.
 \donttest{
 data(inputdata)
 fit <- household_dynamics(inputdata, ~sex, ~age,
-  n_iteration = 15000, burnin = 5000, thinning = 1)
+  n_iteration = 1000, burnin = 500, thinning = 1)
 table_covariates(fit)
 }
 }

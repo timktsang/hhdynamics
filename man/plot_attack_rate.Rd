@@ -64,7 +64,7 @@ the middle, and \code{n/N} counts plus SAR percentages on the right.
 \donttest{
 data(inputdata)
 fit <- household_dynamics(inputdata, ~sex, ~age,
-  n_iteration = 15000, burnin = 5000, thinning = 1)
+  n_iteration = 1000, burnin = 500, thinning = 1)
 
 # Overall only
 plot_attack_rate(fit)
