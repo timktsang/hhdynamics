@@ -20,10 +20,7 @@ For covariate effects, additionally reports exponentiated estimates."></head><bo
 
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
-<li class="nav-item dropdown">
-  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/hhdynamics-intro.html">Getting Started with hhdynamics</a></li>
-  </ul></li>
+<li class="nav-item"><a class="nav-link" href="../articles/index.html">Articles</a></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
  <input class="form-control" type="search" name="search-input" id="search-input" autocomplete="off" aria-label="Search site" placeholder="Search for" data-search-index="../search.json"></form></li>
@@ -71,6 +68,43 @@ For covariate effects, additionally reports exponentiated estimates.</p>
   Variable, Point.estimate, Lower.bound, Upper.bound, and optionally exp columns for covariates.</p>
     </div>
 
+    <div class="section level2">
+    <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">inputdata</span><span class="op">)</span></span></span>
+<span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="household_dynamics.html">household_dynamics</a></span><span class="op">(</span><span class="va">inputdata</span>, <span class="op">~</span><span class="va">sex</span>, <span class="op">~</span><span class="va">age</span>,</span></span>
+<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">15000</span>, burnin <span class="op">=</span> <span class="fl">5000</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 1000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 2000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 3000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 4000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 5000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 6000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 7000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 8000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 9000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 10000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 11000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 12000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 13000</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 14000</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 41 seconds</span>
+<span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                    Variable Point estimate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Daily probability of infection from community          0.004</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Probability of person-to-person transmission in households          0.058</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      sex1.0         -0.091</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age1.0         -0.077</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age2.0         -0.325</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.002       0.007                  NA               NA               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>        0.034       0.087                  NA               NA               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       -0.732       0.512               0.913            0.481            1.668</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       -0.566       0.390               0.926            0.568            1.477</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       -0.802       0.169               0.723            0.448            1.184</span>
+<span class="r-in"><span><span class="co"># }</span></span></span>
+</code></pre></div>
+    </div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>
 

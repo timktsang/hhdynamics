@@ -52,19 +52,19 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 #> Iteration: 12000
 #> Iteration: 13000
 #> Iteration: 14000
-#> The running time is 41 seconds
+#> The running time is 42 seconds
 table_parameters(fit)
-#>                      Parameter        Mean      Median       Lower       Upper
-#> 1 Daily P(community infection) 0.004297105 0.004180552 0.002157186 0.007241747
-#> 2    P(household transmission) 0.057799646 0.056802601 0.034247973 0.085981164
-#> 3                       sex1.0 0.959288634 0.916211880 0.492720579 1.670063592
-#> 4                       age1.0 0.944429198 0.917964994 0.565029244 1.481706049
-#> 5                       age2.0 0.743496508 0.724802870 0.442918118 1.183207883
+#>                      Parameter        Mean      Median       Lower      Upper
+#> 1 Daily P(community infection) 0.004206964 0.004104985 0.002169363 0.00688956
+#> 2    P(household transmission) 0.058300558 0.057707305 0.035072077 0.08707642
+#> 3                       sex1.0 0.946666185 0.906852737 0.499818086 1.66506970
+#> 4                       age1.0 0.950137619 0.928354839 0.572672622 1.45903547
+#> 5                       age2.0 0.749904453 0.725732014 0.437018622 1.19733720
 #>   Acceptance
-#> 1  0.4902994
-#> 2  0.4898993
-#> 3  0.5807721
-#> 4  0.5812387
-#> 5  0.5842389
+#> 1  0.5491033
+#> 2  0.4890993
+#> 3  0.5835056
+#> 4  0.5960397
+#> 5  0.5738383
 # }
 ```

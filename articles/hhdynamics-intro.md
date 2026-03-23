@@ -188,7 +188,9 @@ plot_diagnostics(fit, params = c("community", "household"))
 plot_transmission(fit)
 
 # Save to PDF
-plot_transmission(fit, file = "transmission.pdf")
+pdf("transmission.pdf", width = 7, height = 5)
+plot_transmission(fit)
+dev.off()
 ```
 
 ### Covariate effects (forest plot)

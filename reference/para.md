@@ -51,3 +51,13 @@ A vector with 7 elements, where each of them is a model parameter:
 
 Other example_data:
 [`SI`](https://timktsang.github.io/hhdynamics/reference/SI.md)
+
+## Examples
+
+``` r
+data(para)
+print(para)
+#> [1]  1.000  0.005  0.150  0.000 -0.300 -0.500  0.500
+names(para)
+#> NULL
+```

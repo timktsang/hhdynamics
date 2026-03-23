@@ -105,7 +105,7 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 #> Iteration: 12000
 #> Iteration: 13000
 #> Iteration: 14000
-#> The running time is 42 seconds
+#> The running time is 41 seconds
 
 # Overall only
 plot_attack_rate(fit)

@@ -22,3 +22,17 @@ sums to 1.
 
 Other example_data:
 [`para`](https://timktsang.github.io/hhdynamics/reference/para.md)
+
+## Examples
+
+``` r
+data(SI)
+print(SI)
+#>  [1] 5.872190e-02 3.155084e-01 4.863670e-01 1.369000e-01 2.502287e-03
+#>  [6] 3.537313e-07 1.257039e-14 0.000000e+00 0.000000e+00 0.000000e+00
+#> [11] 0.000000e+00 0.000000e+00 0.000000e+00 0.000000e+00
+barplot(SI, names.arg = seq_along(SI),
+        xlab = "Days since infector onset",
+        ylab = "Probability",
+        main = "Serial interval distribution (influenza)")
+```
