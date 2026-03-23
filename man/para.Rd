@@ -26,5 +26,10 @@ This is an example of the parameter vector for the main model used in the \code{
 Other example_data: 
 \code{\link{SI}}
 }
+\examples{
+data(para)
+print(para)
+names(para)
+}
 \concept{example_data}
 \keyword{datasets}

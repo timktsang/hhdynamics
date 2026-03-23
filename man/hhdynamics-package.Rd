@@ -20,4 +20,12 @@ Useful links:
 \strong{Maintainer}: Tim Tsang \email{timkltsang@gmail.com} (\href{https://orcid.org/0000-0001-5037-6776}{ORCID})
 
 }
+\examples{
+\donttest{
+# Fit a household transmission model
+data(inputdata)
+fit <- household_dynamics(inputdata, inf_factor = ~sex, sus_factor = ~age)
+summary(fit)
+}
+}
 \keyword{internal}

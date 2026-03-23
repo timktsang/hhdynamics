@@ -17,3 +17,11 @@ A named numeric vector of posterior means.
 \description{
 Returns named vector of posterior means for all estimated parameters.
 }
+\examples{
+\donttest{
+data(inputdata)
+fit <- household_dynamics(inputdata, ~sex, ~age,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
+coef(fit)
+}
+}

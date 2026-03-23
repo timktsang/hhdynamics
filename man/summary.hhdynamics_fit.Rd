@@ -20,3 +20,11 @@ Computes posterior summaries (mean, 2.5\%, 97.5\% credible intervals) for all mo
 For community and household parameters, reports the daily probability (via 1-exp(-x) transform).
 For covariate effects, additionally reports exponentiated estimates.
 }
+\examples{
+\donttest{
+data(inputdata)
+fit <- household_dynamics(inputdata, ~sex, ~age,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
+summary(fit)
+}
+}

@@ -19,5 +19,13 @@ This is an example of the serial interval distribution used in the \code{hhdynam
 Other example_data: 
 \code{\link{para}}
 }
+\examples{
+data(SI)
+print(SI)
+barplot(SI, names.arg = seq_along(SI),
+        xlab = "Days since infector onset",
+        ylab = "Probability",
+        main = "Serial interval distribution (influenza)")
+}
 \concept{example_data}
 \keyword{datasets}

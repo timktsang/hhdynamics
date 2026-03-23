@@ -20,3 +20,12 @@ Invisible NULL.
 \description{
 Plot method for hhdynamics_fit objects
 }
+\examples{
+\donttest{
+data(inputdata)
+fit <- household_dynamics(inputdata, ~sex, ~age,
+  n_iteration = 15000, burnin = 5000, thinning = 1)
+plot(fit)                          # diagnostics (default)
+plot(fit, type = "transmission")   # transmission probability curve
+}
+}

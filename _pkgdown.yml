@@ -3,6 +3,14 @@ url: https://timktsang.github.io/hhdynamics/
 template:
   bootstrap: 5
 
+articles:
+  - title: Getting Started
+    contents:
+      - hhdynamics-intro
+  - title: Technical Details
+    contents:
+      - hhdynamics-methodology
+
 reference:
   - title: Model Fitting
     contents:

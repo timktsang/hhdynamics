@@ -23,5 +23,11 @@ data(inputdata)
 \description{
 This is an example of the input data used in the \code{hhdynamics} function. This data frame illustrates the format of the input data. This is a simulated data.
 }
+\examples{
+data(inputdata)
+str(inputdata)
+head(inputdata)
+table(inputdata$inf)
+}
 \concept{inputdata}
 \keyword{datasets}
