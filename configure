@@ -1,0 +1,15 @@
+#!/bin/sh
+# Platform-specific LAPACK linking
+# macOS: R framework provides LAPACK/BLAS; explicit linking causes Abort trap
+# Linux: LAPACK/BLAS must be linked explicitly (dpotrf_ etc.)
+
+case "$(uname -s)" in
+  Darwin)
+    LAPACK_LIBS=""
+    ;;
+  *)
+    LAPACK_LIBS='$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)'
+    ;;
+esac
+
+sed "s|@LAPACK_LIBS@|${LAPACK_LIBS}|" src/Makevars.in > src/Makevars

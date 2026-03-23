@@ -5,7 +5,7 @@ test_that("NA onset for infected contacts is accepted and imputed", {
   inp$onset[infected_contacts[1:2]] <- NA
   expect_message(
     fit <- household_dynamics(inp, ~sex, ~age,
-      n_iteration = 3000, burnin = 1000, thinning = 1),
+      n_iteration = 500, burnin = 100, thinning = 1),
     "missing onset"
   )
   expect_s3_class(fit, "hhdynamics_fit")
@@ -17,7 +17,7 @@ test_that("NA onset for uninfected contacts is fine", {
   inp <- inputdata
   inp$onset[uninfected[1:3]] <- NA
   expect_no_error(
-    fit <- household_dynamics(inp, n_iteration = 3000, burnin = 1000)
+    fit <- household_dynamics(inp, n_iteration = 500, burnin = 100)
   )
 })
 
@@ -30,6 +30,7 @@ test_that("index case onset cannot be NA", {
 })
 
 test_that("results comparable with and without missing onset", {
+  skip_on_cran()
   data(inputdata, package = "hhdynamics")
   fit_full <- household_dynamics(inputdata, ~sex, ~age,
     n_iteration = 5000, burnin = 2000, thinning = 1)

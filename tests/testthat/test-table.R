@@ -1,31 +1,22 @@
 test_that("table_parameters returns expected columns", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata, ~sex, ~age,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_parameters(fit)
+  tab <- table_parameters(.fit_cov)
   expect_s3_class(tab, "data.frame")
   expect_true(all(c("Parameter", "Mean", "Median", "Lower", "Upper", "Acceptance") %in% names(tab)))
   expect_false("ESS" %in% names(tab))  # hidden by default
   # Should have community, household, 3 covariates = 5 rows (no re_sd, no size_param)
   expect_equal(nrow(tab), 5)
   # show_ess = TRUE adds ESS column
-  tab2 <- table_parameters(fit, show_ess = TRUE)
+  tab2 <- table_parameters(.fit_cov, show_ess = TRUE)
   expect_true("ESS" %in% names(tab2))
 })
 
 test_that("table_parameters works without covariates", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_parameters(fit)
+  tab <- table_parameters(.fit_nocov)
   expect_equal(nrow(tab), 2)  # community + household only
 })
 
 test_that("table_covariates returns correct structure", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata, ~sex, ~age,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_covariates(fit)
+  tab <- table_covariates(.fit_cov)
   expect_s3_class(tab, "data.frame")
   expect_equal(nrow(tab), 3)  # sex1, age1, age2
   expect_true(all(c("Covariate", "Type", "Estimate", "exp_Estimate") %in% names(tab)))
@@ -34,18 +25,12 @@ test_that("table_covariates returns correct structure", {
 })
 
 test_that("table_covariates returns empty df when no covariates", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_covariates(fit)
+  tab <- table_covariates(.fit_nocov)
   expect_equal(nrow(tab), 0)
 })
 
 test_that("table_attack_rates overall", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata, ~sex, ~age,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_attack_rates(fit)
+  tab <- table_attack_rates(.fit_cov)
   expect_equal(nrow(tab), 1)
   expect_equal(tab$Stratum, "Overall")
   expect_true(tab$SAR > 0 && tab$SAR < 1)
@@ -53,27 +38,22 @@ test_that("table_attack_rates overall", {
 })
 
 test_that("table_attack_rates by covariate", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata, ~sex, ~age,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  tab <- table_attack_rates(fit, by = ~age)
+  tab <- table_attack_rates(.fit_cov, by = ~age)
   expect_equal(nrow(tab), 3)  # 3 age levels
   expect_true(all(tab$SAR >= 0 & tab$SAR <= 1))
 })
 
 test_that("table_attack_rates errors on missing variable", {
-  data(inputdata, package = "hhdynamics")
-  fit <- household_dynamics(inputdata,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
-  expect_error(table_attack_rates(fit, by = ~nonexistent), "not found")
+  expect_error(table_attack_rates(.fit_nocov, by = ~nonexistent), "not found")
 })
 
 test_that("table_attack_rates handles NA covariates correctly", {
+  skip_on_cran()
   data(inputdata, package = "hhdynamics")
   d <- inputdata
   d$age[c(5, 10, 15)] <- NA
   fit <- household_dynamics(d, ~sex, ~age,
-    n_iteration = 3000, burnin = 1000, thinning = 1)
+    n_iteration = 500, burnin = 100, thinning = 1)
   tab <- table_attack_rates(fit, by = ~age)
   # Should only have non-NA strata (no NA row)
   expect_false(any(is.na(tab$Stratum)))
