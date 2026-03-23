@@ -170,20 +170,20 @@ print(fit)
 summary(fit)
 #>                                                    Variable Point estimate
 #>               Daily probability of infection from community          0.004
-#>  Probability of person-to-person transmission in households          0.054
-#>                                                      sex1.0         -0.080
-#>                                                      age1.0         -0.013
-#>                                                      age2.0         -0.270
+#>  Probability of person-to-person transmission in households          0.061
+#>                                                      sex1.0         -0.156
+#>                                                      age1.0         -0.105
+#>                                                      age2.0         -0.304
 #>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
 #>        0.002       0.006                  NA               NA               NA
-#>        0.032       0.075                  NA               NA               NA
-#>       -0.779       0.462               0.923            0.459            1.587
-#>       -0.458       0.448               0.987            0.633            1.565
-#>       -0.764       0.121               0.764            0.466            1.128
+#>        0.040       0.087                  NA               NA               NA
+#>       -0.814       0.312               0.855            0.443            1.366
+#>       -0.591       0.389               0.901            0.554            1.475
+#>       -0.761       0.211               0.738            0.467            1.234
 coef(fit)
 #>        re_sd    community    household   size_param       sex1.0       age1.0 
-#>  1.000000000  0.004105503  0.055427648  0.000000000 -0.080127889 -0.012915401 
+#>  1.000000000  0.004052343  0.062410503  0.000000000 -0.156495019 -0.104649247 
 #>       age2.0 
-#> -0.269791699 
+#> -0.303945625 
 # }
 ```

@@ -1,5 +1,22 @@
 # Changelog
 
+## hhdynamics 1.3.1
+
+### Bug fixes
+
+- Replaced C-style variable length arrays (VLAs) with
+  `std::vector<double>` in C++ MCMC code to comply with ISO C++
+  standard. Fixes CRAN check WARNING on Windows (GCC 14) and
+  installation failure on Debian Linux.
+
+- Removed obsolete `CXX_STD = CXX11` from Makevars/Makevars.win and
+  `SystemRequirements: C++11` from DESCRIPTION. C++11 support has been
+  removed in R-devel.
+
+- Added LAPACK/BLAS linking flags to `src/Makevars` (previously only in
+  `Makevars.win`), fixing `undefined symbol: dpotrf_` installation error
+  on Debian Linux.
+
 ## hhdynamics 1.3.0
 
 ### New features

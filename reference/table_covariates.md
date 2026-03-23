@@ -35,13 +35,13 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
   n_iteration = 1000, burnin = 500, thinning = 1)
 #> The running time is 2 seconds
 table_covariates(fit)
-#>   Covariate           Type     Estimate      Lower     Upper exp_Estimate
-#> 1    sex1.0    Infectivity -0.116264228 -0.7299445 0.5710986    0.8902400
-#> 2    age1.0 Susceptibility  0.002280579 -0.4057281 0.4345640    1.0022832
-#> 3    age2.0 Susceptibility -0.257778187 -0.6069611 0.1736721    0.7727666
+#>   Covariate           Type    Estimate      Lower     Upper exp_Estimate
+#> 1    sex1.0    Infectivity -0.11676775 -0.7188051 0.4812972    0.8897918
+#> 2    age1.0 Susceptibility -0.07181166 -0.4580998 0.3765685    0.9307062
+#> 3    age2.0 Susceptibility -0.33587788 -0.7930456 0.1503764    0.7147104
 #>   exp_Lower exp_Upper
-#> 1 0.4819357  1.770211
-#> 2 0.6664914  1.544290
-#> 3 0.5450046  1.189665
+#> 1 0.4873342  1.618172
+#> 2 0.6324843  1.457275
+#> 3 0.4524647  1.162272
 # }
 ```

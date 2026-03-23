@@ -33,8 +33,8 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 #> The running time is 2 seconds
 coef(fit)
 #>        re_sd    community    household   size_param       sex1.0       age1.0 
-#>  1.000000000  0.004355417  0.058730048  0.000000000 -0.012770505 -0.109029614 
+#>  1.000000000  0.004308493  0.064927014  0.000000000 -0.149867202 -0.115916101 
 #>       age2.0 
-#> -0.359087952 
+#> -0.377147325 
 # }
 ```
