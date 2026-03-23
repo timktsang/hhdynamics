@@ -3,6 +3,7 @@
 
 # hhdynamics
 
+[![R-CMD-check](https://github.com/timktsang/hhdynamics/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/timktsang/hhdynamics/actions/workflows/R-CMD-check.yaml)
 [![Project Status: Active](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
 
 **hhdynamics** fits Bayesian household transmission models to case-ascertained household studies. It estimates infection risk among household contacts based on time since illness onset, incorporating covariates for infectivity and susceptibility, and accounting for community infection sources. The MCMC backend is written in C++ via Rcpp/RcppArmadillo for speed.
