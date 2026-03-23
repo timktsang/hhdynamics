@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">hhdynamics</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.2</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -33,6 +33,20 @@
       <small>Source: <a href="https://github.com/timktsang/hhdynamics/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.3.2" id="hhdynamics-132">hhdynamics 1.3.2<a class="anchor" aria-label="anchor" href="#hhdynamics-132"></a></h2>
+<div class="section level3">
+<h3 id="test-suite-improvements-1-3-2">Test suite improvements<a class="anchor" aria-label="anchor" href="#test-suite-improvements-1-3-2"></a></h3>
+<ul><li><p>Limit <code>RcppParallel</code> threads to 2 during tests for CRAN compliance. Previously unconstrained parallelism caused a CPU/elapsed time ratio of 22x on Debian, triggering a NOTE.</p></li>
+<li><p>Share MCMC fit fixtures across plot and table tests instead of fitting independently in each test. Reduces total MCMC fits from ~32 to ~12.</p></li>
+<li><p>Reduce MCMC iterations in structural tests from 3000 to 500. These tests check output structure (column names, dimensions, class), not convergence.</p></li>
+<li><p>Mark expensive recovery/comparison tests with <code>skip_on_cran()</code>: onset imputation parameter comparison (5000 iterations x 2 fits), NA covariate attack rate table, and SI summary format check.</p></li>
+</ul></div>
+<div class="section level3">
+<h3 id="build-system-1-3-2">Build system<a class="anchor" aria-label="anchor" href="#build-system-1-3-2"></a></h3>
+<ul><li>Use <code>configure</code> script for platform-specific LAPACK/BLAS linking. On macOS, these libraries are provided by the R framework and do not need explicit linking; on Linux, <code>$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)</code> are required to resolve symbols like <code>dpotrf_</code>.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.3.1" id="hhdynamics-131">hhdynamics 1.3.1<a class="anchor" aria-label="anchor" href="#hhdynamics-131"></a></h2>
 <div class="section level3">

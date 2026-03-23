@@ -1,5 +1,31 @@
 # Changelog
 
+## hhdynamics 1.3.2
+
+### Test suite improvements
+
+- Limit `RcppParallel` threads to 2 during tests for CRAN compliance.
+  Previously unconstrained parallelism caused a CPU/elapsed time ratio
+  of 22x on Debian, triggering a NOTE.
+
+- Share MCMC fit fixtures across plot and table tests instead of fitting
+  independently in each test. Reduces total MCMC fits from ~32 to ~12.
+
+- Reduce MCMC iterations in structural tests from 3000 to 500. These
+  tests check output structure (column names, dimensions, class), not
+  convergence.
+
+- Mark expensive recovery/comparison tests with `skip_on_cran()`: onset
+  imputation parameter comparison (5000 iterations x 2 fits), NA
+  covariate attack rate table, and SI summary format check.
+
+### Build system
+
+- Use `configure` script for platform-specific LAPACK/BLAS linking. On
+  macOS, these libraries are provided by the R framework and do not need
+  explicit linking; on Linux, `$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)` are
+  required to resolve symbols like `dpotrf_`.
+
 ## hhdynamics 1.3.1
 
 ### Bug fixes

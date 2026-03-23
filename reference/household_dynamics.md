@@ -170,20 +170,20 @@ print(fit)
 summary(fit)
 #>                                                    Variable Point estimate
 #>               Daily probability of infection from community          0.004
-#>  Probability of person-to-person transmission in households          0.061
-#>                                                      sex1.0         -0.156
-#>                                                      age1.0         -0.105
-#>                                                      age2.0         -0.304
+#>  Probability of person-to-person transmission in households          0.057
+#>                                                      sex1.0         -0.087
+#>                                                      age1.0         -0.053
+#>                                                      age2.0         -0.328
 #>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
-#>        0.002       0.006                  NA               NA               NA
-#>        0.040       0.087                  NA               NA               NA
-#>       -0.814       0.312               0.855            0.443            1.366
-#>       -0.591       0.389               0.901            0.554            1.475
-#>       -0.761       0.211               0.738            0.467            1.234
+#>        0.003       0.007                  NA               NA               NA
+#>        0.036       0.082                  NA               NA               NA
+#>       -0.656       0.442               0.917            0.519            1.555
+#>       -0.491       0.412               0.949            0.612            1.510
+#>       -0.753       0.121               0.721            0.471            1.129
 coef(fit)
-#>        re_sd    community    household   size_param       sex1.0       age1.0 
-#>  1.000000000  0.004052343  0.062410503  0.000000000 -0.156495019 -0.104649247 
-#>       age2.0 
-#> -0.303945625 
+#>       re_sd   community   household  size_param      sex1.0      age1.0 
+#>  1.00000000  0.00422478  0.05847233  0.00000000 -0.08667671 -0.05260881 
+#>      age2.0 
+#> -0.32780242 
 # }
 ```
