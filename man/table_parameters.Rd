@@ -4,22 +4,25 @@
 \alias{table_parameters}
 \title{Table of transmission parameter estimates}
 \usage{
-table_parameters(fit, probs = c(0.025, 0.975))
+table_parameters(fit, probs = c(0.025, 0.975), show_ess = FALSE)
 }
 \arguments{
 \item{fit}{An object of class \code{hhdynamics_fit}.}
 
 \item{probs}{Numeric vector of length 2 for credible interval bounds.
   Default: \code{c(0.025, 0.975)} (95\% CrI).}
+
+\item{show_ess}{Logical. If \code{TRUE}, include an ESS (effective sample
+  size) column. Default: \code{FALSE}.}
 }
 \value{
 A data frame with columns: Parameter, Mean, Median, Lower, Upper,
-  ESS, Acceptance.
+  Acceptance (and ESS if \code{show_ess = TRUE}).
 }
 \description{
 Returns a clean data frame of posterior parameter estimates with credible
-intervals and effective sample sizes. Community and household parameters
-are reported on the probability scale.
+intervals. Community and household parameters are reported on the
+probability scale.
 }
 \examples{
 \donttest{

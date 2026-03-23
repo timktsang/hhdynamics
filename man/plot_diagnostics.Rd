@@ -4,7 +4,7 @@
 \alias{plot_diagnostics}
 \title{MCMC diagnostic plots}
 \usage{
-plot_diagnostics(fit, params = NULL)
+plot_diagnostics(fit, params = NULL, show_ess = FALSE)
 }
 \arguments{
 \item{fit}{An object of class \code{hhdynamics_fit}.}
@@ -12,6 +12,9 @@ plot_diagnostics(fit, params = NULL)
 \item{params}{Optional character vector of parameter names to plot. If
   \code{NULL} (default), all estimated parameters are plotted (fixed
   parameters like \code{size_param} are skipped).}
+
+\item{show_ess}{Logical. If \code{TRUE}, show the effective sample size
+  (ESS) in the density plot title. Default: \code{FALSE}.}
 }
 \value{
 Invisible NULL. Called for its side effect of producing plots.
@@ -20,7 +23,8 @@ Invisible NULL. Called for its side effect of producing plots.
 Produces trace plots and posterior density plots for each estimated parameter.
 Trace plots show the MCMC chain with the posterior mean (red dashed line).
 Density plots show the marginal posterior with 95\% credible interval bounds
-(blue dashed lines) and effective sample size (ESS) in the title.
+(blue dashed lines). Set \code{show_ess = TRUE} to annotate with effective
+sample size.
 
 Community and household parameters are shown on the probability scale
 (via the \code{1 - exp(-x)} transform).

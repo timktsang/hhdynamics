@@ -23,7 +23,8 @@ plot.hhdynamics_fit <- function(x, type = "diagnostics", ...) {
 #' Produces trace plots and posterior density plots for each estimated parameter.
 #' Trace plots show the MCMC chain with the posterior mean (red dashed line).
 #' Density plots show the marginal posterior with 95\% credible interval bounds
-#' (blue dashed lines) and effective sample size (ESS) in the title.
+#' (blue dashed lines). Set \code{show_ess = TRUE} to annotate with effective
+#' sample size.
 #'
 #' Community and household parameters are shown on the probability scale
 #' (via the \code{1 - exp(-x)} transform).
@@ -32,6 +33,8 @@ plot.hhdynamics_fit <- function(x, type = "diagnostics", ...) {
 #' @param params Optional character vector of parameter names to plot. If
 #'   \code{NULL} (default), all estimated parameters are plotted (fixed
 #'   parameters like \code{size_param} are skipped).
+#' @param show_ess Logical. If \code{TRUE}, show the effective sample size
+#'   (ESS) in the density plot title. Default: \code{FALSE}.
 #' @return Invisible NULL. Called for its side effect of producing plots.
 #' @examples
 #' \donttest{
@@ -42,7 +45,7 @@ plot.hhdynamics_fit <- function(x, type = "diagnostics", ...) {
 #' plot_diagnostics(fit, params = c("community", "household"))
 #' }
 #' @export
-plot_diagnostics <- function(fit, params = NULL) {
+plot_diagnostics <- function(fit, params = NULL, show_ess = FALSE) {
   plot_names <- .get_plot_params(fit, params)
   n_params <- length(plot_names)
   idx <- match(plot_names, fit$param_names)
@@ -68,9 +71,6 @@ plot_diagnostics <- function(fit, params = NULL) {
     # Transform for density (community/household to probability scale)
     x_display <- .transform_param(x_raw, transform)
 
-    # ESS computed on raw scale
-    ess <- round(.effective_sample_size(x_raw))
-
     # Trace plot (raw scale)
     graphics::plot(x_raw, type = "l",
                    main = pname,
@@ -81,7 +81,12 @@ plot_diagnostics <- function(fit, params = NULL) {
 
     # Density plot (transformed scale)
     d <- stats::density(x_display)
-    graphics::plot(d, main = paste0(display_name, "  (ESS: ", ess, ")"),
+    dens_title <- if (show_ess) {
+      paste0(display_name, "  (ESS: ", round(.effective_sample_size(x_raw)), ")")
+    } else {
+      display_name
+    }
+    graphics::plot(d, main = dens_title,
                    xlab = display_name,
                    ylab = "Density")
     ci <- stats::quantile(x_display, c(0.025, 0.975))

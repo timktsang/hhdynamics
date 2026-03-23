@@ -4,9 +4,13 @@ test_that("table_parameters returns expected columns", {
     n_iteration = 3000, burnin = 1000, thinning = 1)
   tab <- table_parameters(fit)
   expect_s3_class(tab, "data.frame")
-  expect_true(all(c("Parameter", "Mean", "Median", "Lower", "Upper", "ESS", "Acceptance") %in% names(tab)))
+  expect_true(all(c("Parameter", "Mean", "Median", "Lower", "Upper", "Acceptance") %in% names(tab)))
+  expect_false("ESS" %in% names(tab))  # hidden by default
   # Should have community, household, 3 covariates = 5 rows (no re_sd, no size_param)
   expect_equal(nrow(tab), 5)
+  # show_ess = TRUE adds ESS column
+  tab2 <- table_parameters(fit, show_ess = TRUE)
+  expect_true("ESS" %in% names(tab2))
 })
 
 test_that("table_parameters works without covariates", {

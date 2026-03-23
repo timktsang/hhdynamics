@@ -9,8 +9,10 @@
 #' @param fit An object of class \code{hhdynamics_fit}.
 #' @param probs Numeric vector of length 2 for credible interval bounds.
 #'   Default: \code{c(0.025, 0.975)} (95\% CrI).
+#' @param show_ess Logical. If \code{TRUE}, include an ESS (effective sample
+#'   size) column. Default: \code{FALSE}.
 #' @return A data frame with columns: Parameter, Mean, Median, Lower, Upper,
-#'   ESS, Acceptance.
+#'   Acceptance (and ESS if \code{show_ess = TRUE}).
 #' @examples
 #' \donttest{
 #' data(inputdata)
@@ -19,7 +21,7 @@
 #' table_parameters(fit)
 #' }
 #' @export
-table_parameters <- function(fit, probs = c(0.025, 0.975)) {
+table_parameters <- function(fit, probs = c(0.025, 0.975), show_ess = FALSE) {
   plot_names <- .get_plot_params(fit, NULL)
   idx <- match(plot_names, fit$param_names)
   n <- length(plot_names)
@@ -30,11 +32,11 @@ table_parameters <- function(fit, probs = c(0.025, 0.975)) {
     Median = numeric(n),
     Lower = numeric(n),
     Upper = numeric(n),
-    ESS = integer(n),
     Acceptance = numeric(n),
     stringsAsFactors = FALSE
   )
 
+  ess_vals <- integer(n)
   for (i in seq_len(n)) {
     x_raw <- fit$samples[, idx[i]]
     transform <- fit$param_transform[idx[i]]
@@ -51,9 +53,11 @@ table_parameters <- function(fit, probs = c(0.025, 0.975)) {
     out$Median[i]     <- stats::median(x_display)
     out$Lower[i]      <- stats::quantile(x_display, probs[1])
     out$Upper[i]      <- stats::quantile(x_display, probs[2])
-    out$ESS[i]        <- round(.effective_sample_size(x_raw))
     out$Acceptance[i]  <- fit$acceptance[idx[i]]
+    ess_vals[i]       <- round(.effective_sample_size(x_raw))
   }
+
+  if (show_ess) out$ESS <- ess_vals
 
   rownames(out) <- NULL
   out
