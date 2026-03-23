@@ -2,7 +2,6 @@
 #include <Rcpp.h>
 #include <RcppParallel.h>
 
-// [[Rcpp::plugins(cpp11)]]
 // [[Rcpp::depends(RcppArmadillo)]]
 // [[Rcpp::depends(RcppParallel)]]
 
@@ -132,7 +131,7 @@ int b4;
 //int b5;
 int b6;
 double hazard;
-double sus[int(data11(b1,1))];
+std::vector<double> sus(int(data11(b1,1)));
 
 // first set every household contacts have 0 infection status
 for (b2=data11(b1,1)-1;b2>=1;--b2){
@@ -309,10 +308,12 @@ if (data(b1,b3*sep2+sep1)==1){
 finaltime=data(b1,b3*sep2+sep1+1);	
 }
 
-double h[finaltime-int(data(b1,3))];
+int h_len = finaltime-int(data(b1,3));
+if (h_len > 0) {
+std::vector<double> h(h_len);
 // fill the community risk
-for (b2=finaltime-data(b1,3)-1;b2>=0;--b2){
-h[b2]=para[1];	
+for (b2=h_len-1;b2>=0;--b2){
+h[b2]=para[1];
 }
 
 
@@ -320,31 +321,32 @@ for (b4=data(b1,1)-1;b4>=0;--b4){
 if ((b4!=b3)&&(data(b1,b4*sep2+sep1)==1)){
 for (b5=SI.length()-1;b5>=0;--b5){
 //if (data(b1,b4*sep2+sep1+1)+b5<=data(b1,4)){
-// if infection date of individual b3 is smaller than the final time	
-if (data(b1,b4*sep2+sep1+1)+b5+1<=finaltime){ 
+// if infection date of individual b3 is smaller than the final time
+if (data(b1,b4*sep2+sep1+1)+b5+1<=finaltime){
 double hrisk=para[2];
 double inf=0;
 // here need to add factor affecting infectivity
 if (n_inf>0){
 for (b6=n_inf-1;b6>=0;--b6){
-inf+=para[4+b6]*(data(b1,b4*sep2+sep1+3+b6));	
+inf+=para[4+b6]*(data(b1,b4*sep2+sep1+3+b6));
 }
 }
 hrisk*=exp(inf);
 h[int(data(b1,b4*sep2+sep1+1)-data(b1,3))+b5]+=hrisk*SI[b5]*exp(data(b1,b4*sep2+sep1+2)*(b4>=0))/pow(data(b1,1)-1.0,para[3]);;
 }
 }
-}	
+}
 }
 //}
 
 
-for (b2=finaltime-data(b1,3)-2;b2>=0;--b2){
-out(b1,b3)-=h[b2]*exp(sus);	
+for (b2=h_len-2;b2>=0;--b2){
+out(b1,b3)-=h[b2]*exp(sus);
 }
 if (data(b1,b3*sep2+sep1)==1){
-out(b1,b3)+=log(1-exp(-h[finaltime-int(data(b1,3))-1]*exp(sus)));	
+out(b1,b3)+=log(1-exp(-h[h_len-1]*exp(sus)));
 }
+} // end h_len > 0
 
 //if (b3==1){
 //for (b2=finaltime-data(b1,3)-1;b2>=0;--b2){
@@ -557,9 +559,11 @@ if (datapro(b1,b3*sep2+sep1)==1){
 finaltime=datapro(b1,b3*sep2+sep1+1);
 }
 
-double h[finaltime-int(datapro(b1,3))];
+int h_len = finaltime-int(datapro(b1,3));
+if (h_len > 0) {
+std::vector<double> h(h_len);
 // fill the community risk
-for (b2=finaltime-datapro(b1,3)-1;b2>=0;--b2){
+for (b2=h_len-1;b2>=0;--b2){
 h[b2]=para[1];
 }
 
@@ -584,12 +588,13 @@ h[int(datapro(b1,b4*sep2+sep1+1)-datapro(b1,3))+b5]+=hrisk*SI[b5]*exp(datapro(b1
 }
 
 
-for (b2=finaltime-datapro(b1,3)-2;b2>=0;--b2){
+for (b2=h_len-2;b2>=0;--b2){
 loglik1pro(b1,b3)-=h[b2]*exp(sus);
 }
 if (datapro(b1,b3*sep2+sep1)==1){
-loglik1pro(b1,b3)+=log(1-exp(-h[finaltime-int(datapro(b1,3))-1]*exp(sus)));
+loglik1pro(b1,b3)+=log(1-exp(-h[h_len-1]*exp(sus)));
 }
+} // end h_len > 0
 
 }
 
