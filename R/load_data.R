@@ -22,10 +22,9 @@
 #' This is an example of the serial interval distribution used in the \code{hhdynamics} function. This vector specifies the format of the serial interval distribution. This is estimated from Tsang et al. Association between antibody titers and protection against influenza virus infection within households. J Infect Dis. 2014 Sep 1;210(5):684-92.
 #' @docType data
 #' @usage data(SI)
-#' @format A vector of length 14, where element X of the vector represents a probability that the onset day is the X days after the onset day of the infector.
-#' \describe{
-#'   \item{}{This is the serial interval distribution. The sum of the vector elements should be 1.}
-#'}
+#' @format A numeric vector of length 14. Element \code{i} gives the probability
+#'   that symptom onset occurs \code{i} days after the infector's onset.
+#'   The vector sums to 1.
 #' @family example_data
 "SI"
 
