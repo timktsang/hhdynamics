@@ -157,111 +157,33 @@ data(inputdata)
 
 # Fit with default flu SI
 fit <- household_dynamics(inputdata, ~sex, ~age,
-  n_iteration = 15000, burnin = 5000, thinning = 1)
-#> Iteration: 1000
-#> Iteration: 2000
-#> Iteration: 3000
-#> Iteration: 4000
-#> Iteration: 5000
-#> Iteration: 6000
-#> Iteration: 7000
-#> Iteration: 8000
-#> Iteration: 9000
-#> Iteration: 10000
-#> Iteration: 11000
-#> Iteration: 12000
-#> Iteration: 13000
-#> Iteration: 14000
-#> The running time is 45 seconds
+  n_iteration = 1000, burnin = 500, thinning = 1)
+#> The running time is 2 seconds
 print(fit)
 #> Household transmission model fit
 #>   Data: 386 households, 1533 individuals
-#>   MCMC: 10000 post-burnin samples (15000 iterations, burnin: 5000, thin: 1)
-#>   Runtime: 45 seconds
+#>   MCMC: 500 post-burnin samples (1000 iterations, burnin: 500, thin: 1)
+#>   Runtime: 2 seconds
 #>   Parameters: community, household, sex1.0, age1.0, age2.0
 #> 
 #> Use summary() for estimates, coef() for posterior means.
 summary(fit)
 #>                                                    Variable Point estimate
 #>               Daily probability of infection from community          0.004
-#>  Probability of person-to-person transmission in households          0.058
-#>                                                      sex1.0         -0.094
-#>                                                      age1.0         -0.083
-#>                                                      age2.0         -0.335
-#>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
-#>        0.002       0.007                  NA               NA               NA
-#>        0.034       0.088                  NA               NA               NA
-#>       -0.751       0.508               0.910            0.472            1.663
-#>       -0.572       0.404               0.921            0.565            1.498
-#>       -0.840       0.175               0.715            0.432            1.191
-coef(fit)
-#>        re_sd    community    household   size_param       sex1.0       age1.0 
-#>  1.000000000  0.004330226  0.059799510  0.000000000 -0.094287565 -0.082762519 
-#>       age2.0 
-#> -0.335101064 
-
-# Fit without covariates (uses default SI)
-fit2 <- household_dynamics(inputdata)
-#> Iteration: 1000
-#> Iteration: 2000
-#> Iteration: 3000
-#> Iteration: 4000
-#> Iteration: 5000
-#> Iteration: 6000
-#> Iteration: 7000
-#> Iteration: 8000
-#> Iteration: 9000
-#> Iteration: 10000
-#> Iteration: 11000
-#> Iteration: 12000
-#> Iteration: 13000
-#> Iteration: 14000
-#> The running time is 22 seconds
-summary(fit2)
-#>                                                    Variable Point estimate
-#>               Daily probability of infection from community          0.004
-#>  Probability of person-to-person transmission in households          0.049
+#>  Probability of person-to-person transmission in households          0.054
+#>                                                      sex1.0         -0.080
+#>                                                      age1.0         -0.013
+#>                                                      age2.0         -0.270
 #>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
 #>        0.002       0.006                  NA               NA               NA
-#>        0.035       0.065                  NA               NA               NA
-
-# Jointly estimate SI from data
-fit3 <- household_dynamics(inputdata, ~sex, ~age, estimate_SI = TRUE)
-#> Iteration: 1000
-#> Iteration: 2000
-#> Iteration: 3000
-#> Iteration: 4000
-#> Iteration: 5000
-#> Iteration: 6000
-#> Iteration: 7000
-#> Iteration: 8000
-#> Iteration: 9000
-#> Iteration: 10000
-#> Iteration: 11000
-#> Iteration: 12000
-#> Iteration: 13000
-#> Iteration: 14000
-#> The running time is 54 seconds
-summary(fit3)  # includes si_shape and si_scale
-#>                                                    Variable Point estimate
-#>               Daily probability of infection from community          0.003
-#>  Probability of person-to-person transmission in households          0.066
-#>                                                      sex1.0         -0.072
-#>                                                      age1.0         -0.075
-#>                                                      age2.0         -0.324
-#>                                                    si_shape          3.768
-#>                                                    si_scale          3.605
-#>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
-#>        0.001       0.006                  NA               NA               NA
-#>        0.039       0.098                  NA               NA               NA
-#>       -0.655       0.454               0.930            0.519            1.574
-#>       -0.577       0.411               0.928            0.561            1.508
-#>       -0.839       0.167               0.723            0.432            1.182
-#>        2.629       5.402                  NA               NA               NA
-#>        3.250       3.984                  NA               NA               NA
-
-# Access MCMC samples for custom diagnostics
-plot(fit$samples[, "community"], type = "l")
-
+#>        0.032       0.075                  NA               NA               NA
+#>       -0.779       0.462               0.923            0.459            1.587
+#>       -0.458       0.448               0.987            0.633            1.565
+#>       -0.764       0.121               0.764            0.466            1.128
+coef(fit)
+#>        re_sd    community    household   size_param       sex1.0       age1.0 
+#>  1.000000000  0.004105503  0.055427648  0.000000000 -0.080127889 -0.012915401 
+#>       age2.0 
+#> -0.269791699 
 # }
 ```

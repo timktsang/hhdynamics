@@ -78,35 +78,21 @@ size) column. Default: <code>FALSE</code>.</p></dd>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">inputdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="household_dynamics.html">household_dynamics</a></span><span class="op">(</span><span class="va">inputdata</span>, <span class="op">~</span><span class="va">sex</span>, <span class="op">~</span><span class="va">age</span>,</span></span>
-<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">15000</span>, burnin <span class="op">=</span> <span class="fl">5000</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 2000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 4000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 5000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 6000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 7000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 8000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 9000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 10000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 11000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 12000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 13000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 14000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 42 seconds</span>
+<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">1000</span>, burnin <span class="op">=</span> <span class="fl">500</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 2 seconds</span>
 <span class="r-in"><span><span class="fu">table_parameters</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                      Parameter        Mean      Median       Lower      Upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Daily P(community infection) 0.004206964 0.004104985 0.002169363 0.00688956</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    P(household transmission) 0.058300558 0.057707305 0.035072077 0.08707642</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3                       sex1.0 0.946666185 0.906852737 0.499818086 1.66506970</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4                       age1.0 0.950137619 0.928354839 0.572672622 1.45903547</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5                       age2.0 0.749904453 0.725732014 0.437018622 1.19733720</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                      Parameter        Mean      Median       Lower       Upper</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 Daily P(community infection) 0.004286945 0.004123752 0.002127015 0.006686184</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    P(household transmission) 0.054171342 0.053289169 0.033269222 0.078908730</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3                       sex1.0 0.992834907 0.956390609 0.480493147 1.761999638</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4                       age1.0 0.988432797 0.948722639 0.544689260 1.601053411</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5                       age2.0 0.809427995 0.754455129 0.437896738 1.595635701</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   Acceptance</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.5491033</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.4890993</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.5835056</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.5960397</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.5738383</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1  0.2822823</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2  0.3283283</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3  0.7197197</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 4  0.7067067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 5  0.6666667</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

@@ -141,22 +141,8 @@ data_w <- result_list[[1]]
 n_inf <- result_list[[2]]
 n_sus <- result_list[[3]]
 mcmc_result <- run_MCMC(data_w,
-  n_iteration = 15000, burnin = 5000,
+  n_iteration = 1000, burnin = 500,
   thinning = 1, n_inf = n_inf, n_sus = n_sus, with_rm = 0)
-#> Iteration: 1000
-#> Iteration: 2000
-#> Iteration: 3000
-#> Iteration: 4000
-#> Iteration: 5000
-#> Iteration: 6000
-#> Iteration: 7000
-#> Iteration: 8000
-#> Iteration: 9000
-#> Iteration: 10000
-#> Iteration: 11000
-#> Iteration: 12000
-#> Iteration: 13000
-#> Iteration: 14000
-#> The running time is 41 seconds
+#> The running time is 2 seconds
 # }
 ```

@@ -70,22 +70,8 @@ stratified by a covariate. Confidence intervals use the Wilson score method.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">inputdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="household_dynamics.html">household_dynamics</a></span><span class="op">(</span><span class="va">inputdata</span>, <span class="op">~</span><span class="va">sex</span>, <span class="op">~</span><span class="va">age</span>,</span></span>
-<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">15000</span>, burnin <span class="op">=</span> <span class="fl">5000</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 2000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 4000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 5000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 6000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 7000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 8000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 9000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 10000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 11000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 12000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 13000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 14000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 41 seconds</span>
+<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">1000</span>, burnin <span class="op">=</span> <span class="fl">500</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 2 seconds</span>
 <span class="r-in"><span><span class="fu">table_attack_rates</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>       Stratum N_contacts N_infected        SAR      Lower     Upper</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> lower Overall       1147         92 0.08020924 0.06585537 0.0973656</span>

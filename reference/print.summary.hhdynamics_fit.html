@@ -70,36 +70,22 @@
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">inputdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="household_dynamics.html">household_dynamics</a></span><span class="op">(</span><span class="va">inputdata</span>, <span class="op">~</span><span class="va">sex</span>, <span class="op">~</span><span class="va">age</span>,</span></span>
-<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">15000</span>, burnin <span class="op">=</span> <span class="fl">5000</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 2000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 4000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 5000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 6000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 7000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 8000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 9000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 10000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 11000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 12000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 13000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 14000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 41 seconds</span>
+<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">1000</span>, burnin <span class="op">=</span> <span class="fl">500</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 2 seconds</span>
 <span class="r-in"><span><span class="va">s</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">s</span>, digits <span class="op">=</span> <span class="fl">4</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>                                                    Variable Point estimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>               Daily probability of infection from community         0.0042</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>  Probability of person-to-person transmission in households         0.0576</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      sex1.0        -0.0825</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age1.0        -0.0826</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age2.0        -0.3285</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>               Daily probability of infection from community         0.0040</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>  Probability of person-to-person transmission in households         0.0554</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      sex1.0        -0.0473</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age1.0        -0.0134</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>                                                      age2.0        -0.2793</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.0022      0.0071                  NA               NA               NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>       0.0364      0.0852                  NA               NA               NA</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.7131      0.4985              0.9208           0.4901           1.6463</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.5566      0.3981              0.9207           0.5732           1.4890</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.8159      0.1572              0.7200           0.4422           1.1702</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.0021      0.0068                  NA               NA               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>       0.0299      0.0835                  NA               NA               NA</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.7286      0.7509              0.9538           0.4826           2.1190</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.4303      0.4099              0.9867           0.6503           1.5067</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>      -0.8305      0.1741              0.7563           0.4358           1.1902</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

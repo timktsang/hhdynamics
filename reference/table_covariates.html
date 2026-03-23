@@ -70,31 +70,17 @@ with exponentiated estimates interpretable as relative risks.</p>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="co"># \donttest{</span></span></span>
 <span class="r-in"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">inputdata</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="va">fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="household_dynamics.html">household_dynamics</a></span><span class="op">(</span><span class="va">inputdata</span>, <span class="op">~</span><span class="va">sex</span>, <span class="op">~</span><span class="va">age</span>,</span></span>
-<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">15000</span>, burnin <span class="op">=</span> <span class="fl">5000</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 1000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 2000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 3000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 4000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 5000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 6000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 7000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 8000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 9000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 10000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 11000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 12000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 13000</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Iteration: 14000</span>
-<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 41 seconds</span>
+<span class="r-in"><span>  n_iteration <span class="op">=</span> <span class="fl">1000</span>, burnin <span class="op">=</span> <span class="fl">500</span>, thinning <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> The running time is 2 seconds</span>
 <span class="r-in"><span><span class="fu">table_covariates</span><span class="op">(</span><span class="va">fit</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span>   Covariate           Type    Estimate      Lower     Upper exp_Estimate</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1    sex1.0    Infectivity -0.09794125 -0.7581836 0.5257743    0.9067022</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2    age1.0 Susceptibility -0.08529700 -0.5542926 0.4009306    0.9182395</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3    age2.0 Susceptibility -0.34225861 -0.8363658 0.1881606    0.7101645</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span>   Covariate           Type     Estimate      Lower     Upper exp_Estimate</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1    sex1.0    Infectivity -0.116264228 -0.7299445 0.5710986    0.8902400</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2    age1.0 Susceptibility  0.002280579 -0.4057281 0.4345640    1.0022832</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3    age2.0 Susceptibility -0.257778187 -0.6069611 0.1736721    0.7727666</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>   exp_Lower exp_Upper</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.4685167  1.691768</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.5744785  1.493214</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.4332823  1.207027</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 1 0.4819357  1.770211</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 2 0.6664914  1.544290</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> 3 0.5450046  1.189665</span>
 <span class="r-in"><span><span class="co"># }</span></span></span>
 </code></pre></div>
     </div>

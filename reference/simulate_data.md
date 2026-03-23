@@ -90,7 +90,7 @@ for extracting parameter estimates to use as simulation inputs.
 data(inputdata)
 data(SI)
 para <- c(1, 0.01, 0.1, 0, 0.1, 0.1, 0.1)
-simulated <- simulate_data(inputdata, 10, ~sex, ~age,
+simulated <- simulate_data(inputdata, 2, ~sex, ~age,
   SI = SI, para = para, with_rm = 0)
 # }
 ```
