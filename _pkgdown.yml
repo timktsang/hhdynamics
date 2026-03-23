@@ -14,6 +14,7 @@ reference:
   - title: S3 Methods
     contents:
       - print.hhdynamics_fit
+      - print.summary.hhdynamics_fit
       - summary.hhdynamics_fit
       - coef.hhdynamics_fit
       - plot.hhdynamics_fit
