@@ -4,6 +4,7 @@
 .effective_sample_size <- function(x) {
   n <- length(x)
   if (n < 4) return(n)
+  if (stats::var(x) == 0) return(1)
   acf_vals <- stats::acf(x, lag.max = n - 1, plot = FALSE)$acf[, , 1]
   # Sum consecutive pairs of autocorrelations starting at lag 1
   # (acf_vals[1] is lag 0 = 1.0, so skip it)
@@ -11,7 +12,7 @@
   k <- 2  # start at lag 1
   while (k + 1 <= length(acf_vals)) {
     pair_sum <- acf_vals[k] + acf_vals[k + 1]
-    if (pair_sum < 0) break
+    if (is.na(pair_sum) || pair_sum < 0) break
     tau <- tau + 2 * pair_sum
     k <- k + 2
   }
