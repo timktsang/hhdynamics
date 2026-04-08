@@ -171,19 +171,19 @@ summary(fit)
 #>                                                    Variable Point estimate
 #>               Daily probability of infection from community          0.004
 #>  Probability of person-to-person transmission in households          0.057
-#>                                                      sex1.0         -0.087
-#>                                                      age1.0         -0.053
-#>                                                      age2.0         -0.328
+#>                                                      sex1.0         -0.062
+#>                                                      age1.0         -0.054
+#>                                                      age2.0         -0.303
 #>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
-#>        0.003       0.007                  NA               NA               NA
-#>        0.036       0.082                  NA               NA               NA
-#>       -0.656       0.442               0.917            0.519            1.555
-#>       -0.491       0.412               0.949            0.612            1.510
-#>       -0.753       0.121               0.721            0.471            1.129
+#>        0.002       0.007                  NA               NA               NA
+#>        0.034       0.086                  NA               NA               NA
+#>       -0.664       0.430               0.940            0.515            1.537
+#>       -0.396       0.446               0.948            0.673            1.562
+#>       -0.819       0.218               0.739            0.441            1.244
 coef(fit)
-#>       re_sd   community   household  size_param      sex1.0      age1.0 
-#>  1.00000000  0.00422478  0.05847233  0.00000000 -0.08667671 -0.05260881 
-#>      age2.0 
-#> -0.32780242 
+#>        re_sd    community    household   size_param       sex1.0       age1.0 
+#>  1.000000000  0.004226086  0.058371401  0.000000000 -0.062106692 -0.053819361 
+#>       age2.0 
+#> -0.302668146 
 # }
 ```

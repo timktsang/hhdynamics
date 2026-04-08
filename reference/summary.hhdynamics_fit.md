@@ -39,15 +39,15 @@ fit <- household_dynamics(inputdata, ~sex, ~age,
 summary(fit)
 #>                                                    Variable Point estimate
 #>               Daily probability of infection from community          0.004
-#>  Probability of person-to-person transmission in households          0.059
-#>                                                      sex1.0         -0.040
-#>                                                      age1.0         -0.127
-#>                                                      age2.0         -0.396
+#>  Probability of person-to-person transmission in households          0.053
+#>                                                      sex1.0         -0.046
+#>                                                      age1.0         -0.023
+#>                                                      age2.0         -0.275
 #>  Lower bound Upper bound exp(Point estimate) exp(Lower bound) exp(Upper bound)
 #>        0.002       0.007                  NA               NA               NA
-#>        0.040       0.082                  NA               NA               NA
-#>       -0.673       0.512               0.960            0.510            1.669
-#>       -0.655       0.382               0.881            0.519            1.465
-#>       -0.835       0.199               0.673            0.434            1.220
+#>        0.032       0.079                  NA               NA               NA
+#>       -0.682       0.601               0.955            0.505            1.825
+#>       -0.477       0.444               0.977            0.621            1.558
+#>       -0.673       0.169               0.759            0.510            1.184
 # }
 ```

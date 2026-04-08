@@ -1,6 +1,20 @@
 # Changelog
 
+## hhdynamics 1.3.3
+
+### Bug fixes
+
+- Fixed `.effective_sample_size()` error on constant MCMC chains. When a
+  parameter has zero variance (chain never moved),
+  [`acf()`](https://rdrr.io/r/stats/acf.html) returns `NaN`, causing
+  `if (pair_sum < 0)` to fail with “missing value where TRUE/FALSE
+  needed.” Now returns ESS = 1 for constant chains and handles any
+  remaining `NaN` autocorrelation values defensively. Fixes CRAN check
+  ERROR on r-devel-linux-x86_64-fedora-gcc.
+
 ## hhdynamics 1.3.2
+
+CRAN release: 2026-03-26
 
 ### Test suite improvements
 
